@@ -1,0 +1,47 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:online_learning_app/core/constants/color.dart';
+
+import 'package:online_learning_app/core/ui/textStyle.dart';
+
+class appBarWidget extends StatelessWidget {
+  const appBarWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: backGroundColor,
+      centerTitle: true,
+      elevation: 0,
+      leadingWidth: 80,
+      title: Text(
+        "Discover",
+        style: textStyle(
+            color: appBarTextColor,
+            letterSpacing: .3.sp,
+            fontWeight: FontWeight.bold),
+      ),
+      // leading: Padding(
+      //   padding: EdgeInsets.only(top: 5.sp),
+      //   child: GestureDetector(
+      //     onTap: () {
+      //       Navigator.push(
+      //           context,
+      //           MaterialPageRoute(
+      //               builder: (context) => StoryViewPage(
+      //                     stories: stories,
+      //                     name: 'ScanSkill',
+      //                   )));
+      //     },
+      //     child: const CircleAvatar(
+      //       backgroundImage: AssetImage(
+      //         'assets/scanskill.jpeg',
+      //       ),
+      //     ),
+      //   ),
+      // ),
+    );
+  }
+}
