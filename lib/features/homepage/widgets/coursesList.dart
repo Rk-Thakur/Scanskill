@@ -24,12 +24,6 @@ class CoursesList extends StatefulWidget {
 
 class _CoursesListState extends State<CoursesList> {
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
@@ -196,10 +190,10 @@ class _CoursesListState extends State<CoursesList> {
                                                               style: textStyle(
                                                                 fontSize: 15.sp,
                                                                 color:
-                                                                    listTextColor,
+                                                                    textColor,
                                                                 fontWeight:
                                                                     FontWeight
-                                                                        .bold,
+                                                                        .w900,
                                                               )),
                                                         ),
                                                         Align(
@@ -218,6 +212,9 @@ class _CoursesListState extends State<CoursesList> {
                                                                 fontSize: 10.sp,
                                                                 color:
                                                                     textColor,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
                                                               )),
                                                         )
                                                       ],
@@ -353,8 +350,8 @@ class _CoursesListState extends State<CoursesList> {
                                                     // : '${state.categoryModelById.data!.name}',
                                                     textAlign: TextAlign.left,
                                                     overflow: TextOverflow.fade,
-                                                    style: TextStyle(
-                                                        fontSize: 15,
+                                                    style: textStyle(
+                                                        fontSize: 15.sp,
                                                         color: textColor,
                                                         fontWeight:
                                                             FontWeight.bold)),
@@ -366,7 +363,7 @@ class _CoursesListState extends State<CoursesList> {
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     maxLines: 2,
-                                                    style: TextStyle(
+                                                    style: textStyle(
                                                         fontSize: 10.sp,
                                                         color: textColor,
                                                         fontWeight:
