@@ -46,8 +46,8 @@ class Data {
     required this.pagination,
   });
 
-  List<Category> categories;
-  Pagination pagination;
+  final List<Category>? categories;
+  final Pagination? pagination;
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
         categories: List<Category>.from(
@@ -56,8 +56,8 @@ class Data {
       );
 
   Map<String, dynamic> toJson() => {
-        "categories": List<dynamic>.from(categories.map((x) => x.toJson())),
-        "pagination": pagination.toJson(),
+        "categories": List<dynamic>.from(categories!.map((x) => x.toJson())),
+        "pagination": pagination!.toJson(),
       };
 }
 

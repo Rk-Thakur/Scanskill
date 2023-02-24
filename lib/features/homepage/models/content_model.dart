@@ -167,6 +167,7 @@ class ContentModel {
     this.ancestor,
     this.descendant,
     this.description,
+    this.excerpt,
     this.createdAt,
     this.updatedAt,
     this.deletedAt,
@@ -181,6 +182,7 @@ class ContentModel {
   final String? ancestor;
   final String? descendant;
   final String? description;
+  final String? excerpt;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final dynamic deletedAt;
@@ -195,6 +197,7 @@ class ContentModel {
         ancestor: json["ancestor"],
         descendant: json["descendant"],
         description: json["description"],
+        excerpt: json["excerpt"],
         createdAt: json["createdAt"] == null
             ? null
             : DateTime.parse(json["createdAt"]),
@@ -214,6 +217,7 @@ class ContentModel {
         "ancestor": ancestor,
         "descendant": descendant,
         "description": description,
+        "excerpt": excerpt,
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),
         "deletedAt": deletedAt,

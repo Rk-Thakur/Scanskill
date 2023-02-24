@@ -3,9 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:online_learning_app/core/ui/textStyle.dart';
-import 'package:online_learning_app/features/homepage/view/homePage.dart';
-import 'package:online_learning_app/features/onBoarding/onBoard.dart';
-import 'package:page_transition/page_transition.dart';
 
 class SplashScreenPage extends StatefulWidget {
   const SplashScreenPage({Key? key}) : super(key: key);

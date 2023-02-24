@@ -18,3 +18,8 @@ class FetchCataegoryEventById extends CategoryEvent {
     this.category_id,
   );
 }
+
+class FetchCategoryByIdContentEvent extends CategoryEvent {
+  final String content_id;
+  FetchCategoryByIdContentEvent(this.content_id);
+}

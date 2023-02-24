@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:online_learning_app/features/homepage/bloc/catergory_bloc.dart';
+import 'package:online_learning_app/features/homepage/models/category_by_id_content.dart';
 import 'package:online_learning_app/features/homepage/view/homePage.dart';
+import 'package:online_learning_app/features/homepage/view/storyView.dart';
 import 'package:online_learning_app/features/onBoarding/onBoard.dart';
 import 'package:online_learning_app/features/splash/splash.dart';
 import 'package:online_learning_app/features/utils/route.dart';
@@ -18,6 +20,7 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) {
           return const OnBoardingPage();
         });
+
       case homeScreen:
         return MaterialPageRoute(builder: (_) {
           return MultiBlocProvider(
@@ -30,6 +33,17 @@ class AppRouter {
               ),
             ],
             child: const HomePage(),
+          );
+        });
+      case storyScreen:
+        return MaterialPageRoute(builder: (_) {
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: categoryBloc,
+              ),
+            ],
+            child: StoryViewPage(),
           );
         });
 

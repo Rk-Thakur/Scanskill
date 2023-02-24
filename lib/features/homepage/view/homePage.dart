@@ -22,6 +22,8 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   bool isTapped = false;
   String? courseName;
+  String? categoryId;
+  bool isContent = false;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -35,15 +37,6 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _selectedListIndex = index;
     });
-  }
-
-  @override
-  void initState() {
-    // courseName = 'AWS';
-    // context
-    //     .read<CategoryBloc>()
-    //     .add(FetchCataegoryEventById('9f3cdfef-24c8-4a89-8cca-36ad6e062756'));
-    super.initState();
   }
 
   @override
@@ -108,10 +101,10 @@ class _HomePageState extends State<HomePage> {
                               },
                               scrollDirection: Axis.horizontal,
                               itemCount:
-                                  state.categoryModel.data!.categories.length,
+                                  state.categoryModel.data!.categories!.length,
                               itemBuilder: (context, index) {
-                                final category =
-                                    state.categoryModel.data!.categories[index];
+                                final category = state
+                                    .categoryModel.data!.categories![index];
                                 return Padding(
                                   padding: EdgeInsets.only(
                                       left: 15.sp, top: 5.sp, right: 15.sp),
@@ -119,12 +112,14 @@ class _HomePageState extends State<HomePage> {
                                     children: [
                                       GestureDetector(
                                         onTap: () async {
+                                          context.read<CategoryBloc>().add(
+                                              FetchCataegoryEventById(
+                                                  category.id!));
                                           setState(() {
                                             onButtonTapped(index);
 
-                                            context.read<CategoryBloc>().add(
-                                                FetchCataegoryEventById(
-                                                    category.id!));
+                                            categoryId = category.id;
+                                            isContent = true;
 
                                             // courseName = category.name;
                                           });
@@ -183,7 +178,9 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   Expanded(
-                    child: CoursesList(),
+                    child: CoursesList(
+                      isContent: isContent,
+                    ),
                   ),
                 ],
               ),
