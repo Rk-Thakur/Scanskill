@@ -80,136 +80,144 @@ class _StoryViewPageState extends State<StoryViewPage>
 
   @override
   Widget build(BuildContext context) {
-    final TypeDescription story = content![currentIndex];
-
     return SafeArea(
       child: Scaffold(
         backgroundColor: const Color(0xffF8F7F3),
-        body: GestureDetector(
-          onLongPress: () {
-            animationController!.stop();
-          },
-          // onTapUp: (details) {
-          //   print('okay');
-          // },
-          onLongPressCancel: () {
-            setState(() {
-              animationController!.forward();
-            });
-          },
-          onTapDown: (details) => _onTapDown(details, story),
-          child: Stack(
-            children: [
-              BlocBuilder<CategoryBloc, CategoryState>(
-                builder: (context, state) {
-                  if (state.categoryByIdContentStatus ==
-                      CategoryByIdContentStatus.loading) {
-                    return Center(
-                      child: CircularProgressIndicator(
-                        color: iconColor,
-                      ),
-                    );
-                  }
-                  if (state.categoryByIdContentStatus ==
-                      CategoryByIdContentStatus.success) {
-                    return PageView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        controller: pageController,
-                        itemCount: content!.length,
-                        itemBuilder: (context, index) {
-                          switch (story.type) {
-                            case 'image':
-                              return CachedNetworkImage(
-                                placeholder: (context, url) {
-                                  return Center(
-                                      child: CircularProgressIndicator(
-                                    color: iconColor,
-                                  ));
-                                },
-                                imageUrl: story.imageUrl!,
-                                fit: BoxFit.fill,
-                                width: MediaQuery.of(context).size.width,
-                                height: MediaQuery.of(context).size.height,
-                              );
-                            case 'video':
-                              if (_videoPlayerController != null &&
-                                  _videoPlayerController.value.isInitialized) {
-                                return isLoaded
-                                    ? FittedBox(
-                                        fit: BoxFit.fill,
-                                        child: SizedBox(
-                                          width: _videoPlayerController
-                                              .value.size.width,
-                                          height: _videoPlayerController
-                                              .value.size.height,
-                                          child: VideoPlayer(
-                                            _videoPlayerController,
+        body: Builder(builder: (context) {
+          if (content == null || content!.isEmpty) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          final TypeDescription story = content![currentIndex];
+
+          return GestureDetector(
+            onLongPress: () {
+              animationController!.stop();
+            },
+            // onTapUp: (details) {
+            //   print('okay');
+            // },
+            onLongPressCancel: () {
+              setState(() {
+                animationController!.forward();
+              });
+            },
+            onTapDown: (details) => _onTapDown(details, story),
+            child: Stack(
+              children: [
+                BlocBuilder<CategoryBloc, CategoryState>(
+                  builder: (context, state) {
+                    if (state.categoryByIdContentStatus ==
+                        CategoryByIdContentStatus.loading) {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          color: iconColor,
+                        ),
+                      );
+                    }
+                    if (state.categoryByIdContentStatus ==
+                        CategoryByIdContentStatus.success) {
+                      return PageView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          controller: pageController,
+                          itemCount: content!.length,
+                          itemBuilder: (context, index) {
+                            switch (story.type) {
+                              case 'image':
+                                return CachedNetworkImage(
+                                  placeholder: (context, url) {
+                                    return Center(
+                                        child: CircularProgressIndicator(
+                                      color: iconColor,
+                                    ));
+                                  },
+                                  imageUrl: story.imageUrl!,
+                                  fit: BoxFit.fill,
+                                  width: MediaQuery.of(context).size.width,
+                                  height: MediaQuery.of(context).size.height,
+                                );
+                              case 'video':
+                                if (_videoPlayerController != null &&
+                                    _videoPlayerController
+                                        .value.isInitialized) {
+                                  return isLoaded
+                                      ? FittedBox(
+                                          fit: BoxFit.fill,
+                                          child: SizedBox(
+                                            width: _videoPlayerController
+                                                .value.size.width,
+                                            height: _videoPlayerController
+                                                .value.size.height,
+                                            child: VideoPlayer(
+                                              _videoPlayerController,
+                                            ),
                                           ),
-                                        ),
-                                      )
-                                    : CircularProgressIndicator(
-                                        color: iconColor,
-                                      );
-                              }
-                              break;
-                            case 'article':
-                              animationController!.stop();
-                              // return Text("Html");
-                              return HtmlTypePage(
-                                htmlData: story.article,
-                              );
-                            case 'text':
-                              return Center(
-                                child: Text("text"),
-                              );
-                            // return Center(
-                            //   child: Text(story.),
-                            // );
-                            // case MediaType.quiz:
-                            //   animationController!.stop();
-                            //   return QuizPlayScreen(
-                            //     name: story.url,
-                            //   );
-                          }
-                          return const SizedBox.shrink();
-                        });
-                  } else {
-                    return Container();
-                  }
-                },
-              ),
-              Positioned(
-                  top: 10.0,
-                  left: 10.0,
-                  right: 10.0,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: content!
-                            .asMap()
-                            .map((i, e) {
-                              return MapEntry(
-                                i,
-                                AnimatedBar(
-                                    animationController: animationController!,
-                                    position: i,
-                                    currentIndex: currentIndex),
-                              );
-                            })
-                            .values
-                            .toList(),
-                      ),
-                      // Padding(
-                      //     padding: EdgeInsets.symmetric(
-                      //         horizontal: 1.5, vertical: 5.sp),
-                      //     child: UserInfo(
-                      //       name: widget.name,
-                      //     )),
-                    ],
-                  )),
-            ],
-          ),
-        ),
+                                        )
+                                      : CircularProgressIndicator(
+                                          color: iconColor,
+                                        );
+                                }
+                                break;
+                              case 'article':
+                                animationController!.stop();
+                                // return Text("Html");
+                                return HtmlTypePage(
+                                  htmlData: story.article,
+                                );
+                              case 'text':
+                                return Center(
+                                  child: Text("text"),
+                                );
+                              // return Center(
+                              //   child: Text(story.),
+                              // );
+                              // case MediaType.quiz:
+                              //   animationController!.stop();
+                              //   return QuizPlayScreen(
+                              //     name: story.url,
+                              //   );
+                            }
+                            return const SizedBox.shrink();
+                          });
+                    } else {
+                      return Container();
+                    }
+                  },
+                ),
+                Positioned(
+                    top: 10.0,
+                    left: 10.0,
+                    right: 10.0,
+                    child: Column(
+                      children: [
+                        Row(
+                          children: content!
+                              .asMap()
+                              .map((i, e) {
+                                return MapEntry(
+                                  i,
+                                  AnimatedBar(
+                                      animationController: animationController!,
+                                      position: i,
+                                      currentIndex: currentIndex),
+                                );
+                              })
+                              .values
+                              .toList(),
+                        ),
+                        // Padding(
+                        //     padding: EdgeInsets.symmetric(
+                        //         horizontal: 1.5, vertical: 5.sp),
+                        //     child: UserInfo(
+                        //       name: widget.name,
+                        //     )),
+                      ],
+                    )),
+              ],
+            ),
+          );
+        }),
       ),
     );
   }

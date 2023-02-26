@@ -9,6 +9,7 @@ import 'package:online_learning_app/core/constants/color.dart';
 import 'package:online_learning_app/features/profile/category/category.dart';
 
 import 'package:online_learning_app/core/ui/textStyle.dart';
+import 'package:online_learning_app/features/utils/route.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../homepage/view/homePage.dart';
@@ -97,11 +98,7 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        Navigator.of(context).push(
-                          PageTransition(
-                              type: PageTransitionType.fade,
-                              child: const HomePage()),
-                        );
+                        Navigator.of(context).pushNamed(homeScreen);
                       },
                       child: Container(
                         width: double.infinity,
