@@ -23,6 +23,7 @@ class CoursesList extends StatefulWidget {
 }
 
 class _CoursesListState extends State<CoursesList> {
+  List<int> box = [0, 4, 6, 10, 12, 16, 18, 22];
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -166,8 +167,8 @@ class _CoursesListState extends State<CoursesList> {
                                                   child: Padding(
                                                     padding:
                                                         EdgeInsets.symmetric(
-                                                            horizontal: 15.sp,
-                                                            vertical: 10.sp),
+                                                            horizontal: 8.sp,
+                                                            vertical: 8.sp),
                                                     child: Column(
                                                       crossAxisAlignment:
                                                           CrossAxisAlignment
@@ -189,12 +190,17 @@ class _CoursesListState extends State<CoursesList> {
                                                                       .fade,
                                                               style: textStyle(
                                                                 fontSize: 15.sp,
+                                                                letterSpacing:
+                                                                    .5,
                                                                 color:
                                                                     textColor,
                                                                 fontWeight:
                                                                     FontWeight
-                                                                        .w900,
+                                                                        .bold,
                                                               )),
+                                                        ),
+                                                        SizedBox(
+                                                          height: 5.sp,
                                                         ),
                                                         Align(
                                                           alignment:
@@ -207,14 +213,21 @@ class _CoursesListState extends State<CoursesList> {
                                                               overflow:
                                                                   TextOverflow
                                                                       .ellipsis,
-                                                              maxLines: 3,
+                                                              maxLines: (index ==
+                                                                          0 ||
+                                                                      (index % 2 ==
+                                                                              0 &&
+                                                                          index >
+                                                                              2))
+                                                                  ? 9
+                                                                  : 2,
                                                               style: textStyle(
-                                                                fontSize: 10.sp,
+                                                                fontSize: 11.sp,
                                                                 color:
                                                                     textColor,
                                                                 fontWeight:
                                                                     FontWeight
-                                                                        .bold,
+                                                                        .w600,
                                                               )),
                                                         )
                                                       ],
@@ -336,7 +349,7 @@ class _CoursesListState extends State<CoursesList> {
                                         child: Padding(
                                           padding: EdgeInsets.symmetric(
                                               horizontal: 15.sp,
-                                              vertical: 10.sp),
+                                              vertical: 5.sp),
                                           child: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.center,
@@ -346,7 +359,7 @@ class _CoursesListState extends State<CoursesList> {
                                                 child: Text(
                                                     // isContent
                                                     //     ?
-                                                    '${content.title}',
+                                                    '${content.title} ${index}',
                                                     // : '${state.categoryModelById.data!.name}',
                                                     textAlign: TextAlign.left,
                                                     overflow: TextOverflow.fade,
@@ -356,18 +369,25 @@ class _CoursesListState extends State<CoursesList> {
                                                         fontWeight:
                                                             FontWeight.bold)),
                                               ),
+                                              SizedBox(
+                                                height: 5.sp,
+                                              ),
                                               Align(
                                                 alignment: Alignment.topLeft,
                                                 child: Text(
-                                                    '${content.excerpt}',
+                                                    '${content.excerpt} {$index}',
                                                     overflow:
                                                         TextOverflow.ellipsis,
-                                                    maxLines: 2,
+                                                    maxLines: (index == 0 ||
+                                                            (index % 2 == 0 &&
+                                                                index > 2))
+                                                        ? 8
+                                                        : 2,
                                                     style: textStyle(
-                                                        fontSize: 10.sp,
+                                                        fontSize: 11.sp,
                                                         color: textColor,
                                                         fontWeight:
-                                                            FontWeight.bold)),
+                                                            FontWeight.w600)),
                                               )
                                             ],
                                           ),

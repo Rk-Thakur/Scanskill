@@ -41,9 +41,7 @@ class _StoryViewPageState extends State<StoryViewPage>
               isLoaded = false;
             }));
       _videoPlayerController.play();
-      //content
       content = state.categoryByIdContent.data!.typeDescriptions!;
-
       final TypeDescription firstStory =
           state.categoryByIdContent.data!.typeDescriptions!.first;
       _loadStory(story: firstStory, animatePage: false);
@@ -82,7 +80,7 @@ class _StoryViewPageState extends State<StoryViewPage>
 
   @override
   Widget build(BuildContext context) {
-    TypeDescription? story = content![currentIndex];
+    final TypeDescription story = content![currentIndex];
 
     return SafeArea(
       child: Scaffold(
@@ -114,74 +112,67 @@ class _StoryViewPageState extends State<StoryViewPage>
                   }
                   if (state.categoryByIdContentStatus ==
                       CategoryByIdContentStatus.success) {
-                    return story == null
-                        ? Center(
-                            child: CircularProgressIndicator(
-                              color: iconColor,
-                            ),
-                          )
-                        : PageView.builder(
-                            physics: const NeverScrollableScrollPhysics(),
-                            controller: pageController,
-                            itemCount: content!.length,
-                            itemBuilder: (context, index) {
-                              switch (story.type) {
-                                case 'image':
-                                  return CachedNetworkImage(
-                                    placeholder: (context, url) {
-                                      return Center(
-                                          child: CircularProgressIndicator(
+                    return PageView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        controller: pageController,
+                        itemCount: content!.length,
+                        itemBuilder: (context, index) {
+                          switch (story.type) {
+                            case 'image':
+                              return CachedNetworkImage(
+                                placeholder: (context, url) {
+                                  return Center(
+                                      child: CircularProgressIndicator(
+                                    color: iconColor,
+                                  ));
+                                },
+                                imageUrl: story.imageUrl!,
+                                fit: BoxFit.fill,
+                                width: MediaQuery.of(context).size.width,
+                                height: MediaQuery.of(context).size.height,
+                              );
+                            case 'video':
+                              if (_videoPlayerController != null &&
+                                  _videoPlayerController.value.isInitialized) {
+                                return isLoaded
+                                    ? FittedBox(
+                                        fit: BoxFit.fill,
+                                        child: SizedBox(
+                                          width: _videoPlayerController
+                                              .value.size.width,
+                                          height: _videoPlayerController
+                                              .value.size.height,
+                                          child: VideoPlayer(
+                                            _videoPlayerController,
+                                          ),
+                                        ),
+                                      )
+                                    : CircularProgressIndicator(
                                         color: iconColor,
-                                      ));
-                                    },
-                                    imageUrl: story.imageUrl!,
-                                    fit: BoxFit.fill,
-                                    width: MediaQuery.of(context).size.width,
-                                    height: MediaQuery.of(context).size.height,
-                                  );
-                                case 'video':
-                                  if (_videoPlayerController != null &&
-                                      _videoPlayerController
-                                          .value.isInitialized) {
-                                    return isLoaded
-                                        ? FittedBox(
-                                            fit: BoxFit.fill,
-                                            child: SizedBox(
-                                              width: _videoPlayerController
-                                                  .value.size.width,
-                                              height: _videoPlayerController
-                                                  .value.size.height,
-                                              child: VideoPlayer(
-                                                _videoPlayerController,
-                                              ),
-                                            ),
-                                          )
-                                        : CircularProgressIndicator(
-                                            color: iconColor,
-                                          );
-                                  }
-                                  break;
-                                case 'article':
-                                  animationController!.stop();
-                                  // return Text("Html");
-                                  return HtmlTypePage(
-                                    htmlData: story.article,
-                                  );
-                                case 'text':
-                                  return const Center(
-                                    child: Text("text"),
-                                  );
-                                // return Center(
-                                //   child: Text(story.),
-                                // );
-                                // case MediaType.quiz:
-                                //   animationController!.stop();
-                                //   return QuizPlayScreen(
-                                //     name: story.url,
-                                //   );
+                                      );
                               }
-                              return const SizedBox.shrink();
-                            });
+                              break;
+                            case 'article':
+                              animationController!.stop();
+                              // return Text("Html");
+                              return HtmlTypePage(
+                                htmlData: story.article,
+                              );
+                            case 'text':
+                              return Center(
+                                child: Text("text"),
+                              );
+                            // return Center(
+                            //   child: Text(story.),
+                            // );
+                            // case MediaType.quiz:
+                            //   animationController!.stop();
+                            //   return QuizPlayScreen(
+                            //     name: story.url,
+                            //   );
+                          }
+                          return const SizedBox.shrink();
+                        });
                   } else {
                     return Container();
                   }
@@ -231,11 +222,6 @@ class _StoryViewPageState extends State<StoryViewPage>
         if (currentIndex - 1 >= 0) {
           currentIndex -= 1;
           _loadStory(story: content![currentIndex]);
-          if (story.type == 'video') {
-            if (_videoPlayerController.value.isPlaying) {
-              _videoPlayerController.pause();
-            }
-          }
         }
       });
     } else if (dx > 2 * screenWidth / 3) {
