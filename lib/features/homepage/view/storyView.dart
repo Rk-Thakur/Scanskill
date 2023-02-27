@@ -97,9 +97,7 @@ class _StoryViewPageState extends State<StoryViewPage>
             onLongPress: () {
               animationController!.stop();
             },
-            // onTapUp: (details) {
-            //   print('okay');
-            // },
+            
             onLongPressCancel: () {
               setState(() {
                 animationController!.forward();
