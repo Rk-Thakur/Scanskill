@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:online_learning_app/core/constants/color.dart';
+import 'package:online_learning_app/features/homepage/view/drawer.dart';
 import 'package:online_learning_app/features/homepage/widgets/appBarWidget.dart';
 import 'package:online_learning_app/features/homepage/widgets/coursesList.dart';
 
@@ -42,6 +43,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      endDrawer: const ProfileDrawer(),
       backgroundColor: backGroundColor,
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(60),

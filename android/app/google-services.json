@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1029608890803",
+    "project_id": "scanskill-9a3a9",
+    "storage_bucket": "scanskill-9a3a9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1029608890803:android:5ef0e7a19ca8fb42f2ebc6",
+        "android_client_info": {
+          "package_name": "com.example.online_learning_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1029608890803-llvrcdnfmdfcmc9kg50de423p0g72ce0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASOuW860hwKYOFi3Dz-At3fEETXFP_SbE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1029608890803-llvrcdnfmdfcmc9kg50de423p0g72ce0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -6,7 +6,7 @@ import 'package:online_learning_app/core/constants/color.dart';
 import 'package:online_learning_app/core/ui/k_text_form_field.dart';
 import 'package:online_learning_app/features/homepage/models/quiz_model.dart';
 import 'package:online_learning_app/features/homepage/widgets/data.dart';
-import 'package:online_learning_app/features/login/loginPage.dart';
+import 'package:online_learning_app/features/authentication/view/loginPage.dart';
 
 class QuizPlayScreen extends StatefulWidget {
   QuizPlayScreen({Key? key, required this.name}) : super(key: key);

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:online_learning_app/core/constants/color.dart';
 import 'package:online_learning_app/core/ui/textStyle.dart';
-import 'package:online_learning_app/features/login/loginPage.dart';
+import 'package:online_learning_app/features/authentication/view/loginPage.dart';
 import 'package:page_transition/page_transition.dart';
 
 class OnBoardingPage extends StatefulWidget {

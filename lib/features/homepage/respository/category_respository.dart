@@ -12,9 +12,9 @@ class CategoryRepository {
     try {
       final response = await dio.get(APIConstants.getAllCategories);
       print(response.data);
-      if (response.statusCode == 200) {
-        CategoryModel.fromJson(response.data);
-      }
+      // if (response.statusCode == 200) {
+      //   CategoryModel.fromJson(response.data);
+      // }
       return CategoryModel.fromJson(response.data);
     } on DioError catch (e) {
       throw e.message;

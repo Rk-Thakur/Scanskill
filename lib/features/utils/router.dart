@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:online_learning_app/features/authentication/auth_repository/auth_repository.dart';
+import 'package:online_learning_app/features/authentication/bloc/authentication_bloc.dart';
+import 'package:online_learning_app/features/authentication/view/loginPage.dart';
 import 'package:online_learning_app/features/homepage/bloc/catergory_bloc.dart';
 import 'package:online_learning_app/features/homepage/models/category_by_id_content.dart';
 import 'package:online_learning_app/features/homepage/view/homePage.dart';
@@ -10,6 +13,9 @@ import 'package:online_learning_app/features/utils/route.dart';
 
 class AppRouter {
   final CategoryBloc categoryBloc = CategoryBloc();
+  final AuthenticationBloc authenticationBloc;
+  AppRouter(this.authenticationBloc);
+  final AuthRepository authRepository = AuthRepository();
   Route<dynamic> onGeneratorRoute(RouteSettings routeSettings) {
     switch (routeSettings.name) {
       case splashScreen:
@@ -44,6 +50,20 @@ class AppRouter {
               ),
             ],
             child: StoryViewPage(),
+          );
+        });
+      case loginScreen:
+        return MaterialPageRoute(builder: (_) {
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider<AuthenticationBloc>(
+                  create: (context) =>
+                      AuthenticationBloc(authRepository: authRepository)),
+              BlocProvider.value(value: authenticationBloc)
+            ],
+            child: Builder(builder: (context) {
+              return LoginPage();
+            }),
           );
         });
 

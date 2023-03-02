@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:online_learning_app/core/constants/color.dart';
@@ -38,13 +39,15 @@ class _StoryViewPageState extends State<StoryViewPage>
 
       _videoPlayerController = VideoPlayerController.network(network)
         ..initialize().then((value) => setState(() {
-              isLoaded = false;
+              isLoaded = true;
             }));
       _videoPlayerController.play();
       content = state.categoryByIdContent.data!.typeDescriptions!;
       final TypeDescription firstStory =
           state.categoryByIdContent.data!.typeDescriptions!.first;
+
       _loadStory(story: firstStory, animatePage: false);
+
       animationController!.addStatusListener((status) {
         if (status == AnimationStatus.completed) {
           animationController!.stop();
@@ -57,10 +60,11 @@ class _StoryViewPageState extends State<StoryViewPage>
                   story: state.categoryByIdContent.data!
                       .typeDescriptions![currentIndex]);
             } else {
-              currentIndex = 0;
-              _loadStory(
-                  story: state.categoryByIdContent.data!
-                      .typeDescriptions![currentIndex]);
+              // currentIndex = 0;
+              // _loadStory(
+              //     story: state.categoryByIdContent.data!
+              //         .typeDescriptions![currentIndex]);
+              Navigator.pop(context);
             }
           });
         }
@@ -76,6 +80,19 @@ class _StoryViewPageState extends State<StoryViewPage>
     animationController!.dispose();
     _videoPlayerController.dispose();
     super.dispose();
+  }
+
+  String _videoDuration(Duration position) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final hours = twoDigits(position.inHours);
+    final minutes = twoDigits(position.inMinutes.remainder(60));
+    final seconds = twoDigits(position.inSeconds.remainder(60));
+
+    return [
+      if (position.inHours > 0) hours,
+      minutes,
+      seconds,
+    ].join(':');
   }
 
   @override
@@ -97,7 +114,6 @@ class _StoryViewPageState extends State<StoryViewPage>
             onLongPress: () {
               animationController!.stop();
             },
-            
             onLongPressCancel: () {
               setState(() {
                 animationController!.forward();
@@ -125,48 +141,55 @@ class _StoryViewPageState extends State<StoryViewPage>
                           itemBuilder: (context, index) {
                             switch (story.type) {
                               case 'image':
-                                return CachedNetworkImage(
-                                  placeholder: (context, url) {
-                                    return Center(
-                                        child: CircularProgressIndicator(
+                                if (story.imageUrl != null) {
+                                  return CachedNetworkImage(
+                                    placeholder: (context, url) {
+                                      return Center(
+                                          child: CircularProgressIndicator(
+                                        color: iconColor,
+                                      ));
+                                    },
+                                    imageUrl: story.imageUrl!,
+                                    fit: BoxFit.fitWidth,
+                                    width: MediaQuery.of(context).size.width,
+                                    height: MediaQuery.of(context).size.height,
+                                  );
+                                } else {
+                                  return Center(
+                                    child: CircularProgressIndicator(
                                       color: iconColor,
-                                    ));
-                                  },
-                                  imageUrl: story.imageUrl!,
-                                  fit: BoxFit.fill,
-                                  width: MediaQuery.of(context).size.width,
-                                  height: MediaQuery.of(context).size.height,
-                                );
+                                    ),
+                                  );
+                                }
+
                               case 'video':
                                 if (_videoPlayerController != null &&
                                     _videoPlayerController
                                         .value.isInitialized) {
-                                  return isLoaded
-                                      ? FittedBox(
-                                          fit: BoxFit.fill,
-                                          child: SizedBox(
-                                            width: _videoPlayerController
-                                                .value.size.width,
-                                            height: _videoPlayerController
-                                                .value.size.height,
-                                            child: VideoPlayer(
-                                              _videoPlayerController,
-                                            ),
-                                          ),
-                                        )
-                                      : CircularProgressIndicator(
-                                          color: iconColor,
-                                        );
+                                  return videoWidget();
+                                } else {
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      color: iconColor,
+                                    ),
+                                  );
                                 }
-                                break;
                               case 'article':
                                 animationController!.stop();
-                                // return Text("Html");
-                                return HtmlTypePage(
-                                  htmlData: story.article,
-                                );
+                                if (story.article != null) {
+                                  return HtmlTypePage(
+                                    htmlData: story.article,
+                                  );
+                                } else {
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      color: iconColor,
+                                    ),
+                                  );
+                                }
+
                               case 'text':
-                                return Center(
+                                return const Center(
                                   child: Text("text"),
                                 );
                               // return Center(
@@ -198,14 +221,16 @@ class _StoryViewPageState extends State<StoryViewPage>
                                 return MapEntry(
                                   i,
                                   AnimatedBar(
-                                      animationController: animationController!,
-                                      position: i,
-                                      currentIndex: currentIndex),
+                                    animationController: animationController!,
+                                    position: i,
+                                    currentIndex: currentIndex,
+                                  ),
                                 );
                               })
                               .values
                               .toList(),
                         ),
+
                         // Padding(
                         //     padding: EdgeInsets.symmetric(
                         //         horizontal: 1.5, vertical: 5.sp),
@@ -222,28 +247,101 @@ class _StoryViewPageState extends State<StoryViewPage>
     );
   }
 
+  videoWidget() {
+    return Column(
+      children: [
+        Expanded(
+          child: FittedBox(
+            fit: BoxFit.fitWidth,
+            child: SizedBox(
+              width: _videoPlayerController.value.size.width,
+              height: _videoPlayerController.value.size.height,
+              child: VideoPlayer(
+                _videoPlayerController,
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(
+              top: 10.sp, bottom: 20.sp, right: 10.sp, left: 10.sp),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // ValueListenableBuilder(
+              //     valueListenable: _videoPlayerController,
+              //     builder: (context, VideoPlayerValue value, child) {
+              //       return Text(
+              //         _videoDuration(value.position),
+              //         style: TextStyle(color: textColor, fontSize: 15),
+              //       );
+              //     }),
+              Expanded(
+                  child: Container(
+                decoration: BoxDecoration(
+                  // color: Colors.grey,
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                height: 10,
+                child: VideoProgressIndicator(_videoPlayerController,
+                    colors: VideoProgressColors(
+                        backgroundColor: Colors.grey,
+                        bufferedColor: unselectedColor,
+                        playedColor: iconColor),
+                    allowScrubbing: true),
+              )),
+              // Text(
+              //   _videoDuration(_videoPlayerController.value.duration),
+              //   style: TextStyle(color: textColor, fontSize: 15),
+              // )
+
+              // IconButton(
+              //     onPressed: () {
+              //       SystemChrome.setPreferredOrientations(
+              //           [DeviceOrientation.landscapeLeft]);
+              //     },
+              //     icon: Icon(Icons.fullscreen))
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   _onTapDown(TapDownDetails details, TypeDescription story) {
     final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
     final double dx = details.globalPosition.dx;
-    if (dx < screenWidth / 3) {
+    final double dy = details.globalPosition.dy;
+    if (dx < screenWidth / 5 && dy < screenHeight / 1.15) {
       setState(() {
         if (currentIndex - 1 >= 0) {
           currentIndex -= 1;
           _loadStory(story: content![currentIndex]);
+          if (story.type == 'video') {
+            if (_videoPlayerController.value.isPlaying) {
+              _videoPlayerController.pause();
+            }
+          }
         }
       });
-    } else if (dx > 2 * screenWidth / 3) {
+    } else if (dx > 3 * screenWidth / 4 && dy < screenHeight / 1.15) {
       setState(() {
         if (currentIndex + 1 < content!.length) {
           currentIndex += 1;
           _loadStory(story: content![currentIndex]);
+          if (story.type == 'video') {
+            if (_videoPlayerController.value.isPlaying) {
+              _videoPlayerController.pause();
+            }
+          }
         }
         // else {
         //   currentIndex = 0;
         //   _loadStory(story: widget.stories[currentIndex]);
         // }
       });
-    } else {
+    } else if (dx < screenWidth / 1.5 && dy < screenHeight / 1.40) {
       if (story.type == 'video') {
         if (_videoPlayerController.value.isPlaying) {
           _videoPlayerController.pause();
@@ -291,10 +389,10 @@ class _StoryViewPageState extends State<StoryViewPage>
         animationController!.stop();
         break;
     }
-    if (animatePage) {
-      pageController!.animateToPage(currentIndex,
-          duration: const Duration(milliseconds: 1), curve: Curves.easeInOut);
-    }
+    // if (animatePage) {
+    //   pageController!.animateToPage(currentIndex,
+    //       duration: const Duration(milliseconds: 1), curve: Curves.easeInOut);
+    // }
   }
 }
 

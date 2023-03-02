@@ -42,6 +42,17 @@ class appBarWidget extends StatelessWidget {
       //     ),
       //   ),
       // ),
+      actions: [
+        IconButton(
+            icon: const CircleAvatar(
+              backgroundImage: AssetImage('assets/scanskill.jpeg'),
+              radius: 50,
+            ),
+            tooltip: 'Comment Icon',
+            onPressed: () {
+              Scaffold.of(context).openEndDrawer();
+            }),
+      ],
     );
   }
 }
