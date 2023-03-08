@@ -46,7 +46,11 @@ class _LoginPageState extends State<LoginPage> {
         BlocListener<AuthenticationBloc, AuthenticationState>(
           listener: (context, state) {
             if (state.authStatus == AuthStatus.loggedIn) {
-              Navigator.pushNamed(context, '/home');
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/home',
+                (route) => false,
+              );
               // Navigator.pop(context);
             }
           },

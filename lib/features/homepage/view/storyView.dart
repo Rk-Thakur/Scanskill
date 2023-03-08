@@ -426,14 +426,15 @@ class _StoryViewPageState extends State<StoryViewPage>
 
               _videoPlayerController.play();
               animationController!.forward();
-            } else if (_videoPlayerController.value.isBuffering) {
-              // animationController!.stop();
-              setState(() {
-                animationController!.duration =
-                    _videoPlayerController.value.duration -
-                        _videoPlayerController.value.position;
-              });
             }
+            //  else if (_videoPlayerController.value.isBuffering) {
+            //   // animationController!.stop();
+            //   setState(() {
+            //     animationController!.duration =
+            //         _videoPlayerController.value.duration -
+            //             _videoPlayerController.value.position;
+            //   });
+            // }
           });
         break;
       case 'article':

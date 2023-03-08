@@ -17,7 +17,11 @@ class ProfileDrawer extends StatelessWidget {
       child: BlocListener<AuthenticationBloc, AuthenticationState>(
         listener: (context, state) {
           if (state.authStatus == AuthStatus.loggedOut) {
-            Navigator.pushNamed(context, '/home');
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              '/home',
+              (route) => false,
+            );
           }
         },
         child: token != null
