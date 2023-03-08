@@ -12,3 +12,7 @@ class AuthenticationGoogleStatusChanged extends AuthenticationEvent {}
 class AuthenticationStatusChanged extends AuthenticationEvent {}
 
 class AuthenticationLogoutRequested extends AuthenticationEvent {}
+
+class FetchUserProfileEvent extends AuthenticationEvent {}
+
+class CheckLoginEvent extends AuthenticationEvent {}

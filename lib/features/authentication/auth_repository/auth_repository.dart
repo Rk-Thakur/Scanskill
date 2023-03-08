@@ -5,6 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:online_learning_app/core/services/dio_service.dart';
 import 'package:online_learning_app/core/services/token_services.dart';
 import 'package:online_learning_app/features/authentication/models/user.dart';
+import 'package:online_learning_app/features/homepage/models/userProfileModel.dart';
 import 'package:online_learning_app/features/homepage/models/user_model.dart';
 
 import '../../../core/constants/api_constants.dart';
@@ -29,24 +30,53 @@ class AuthRepository {
 
       await _auth.signInWithCredential(credential);
       String firebaseIdToken = await _auth.currentUser!.getIdToken();
-      final data = {'idToken': firebaseIdToken};
-      print(firebaseIdToken);
+      final data = {'id_token': firebaseIdToken};
+
+      print('token ' + firebaseIdToken);
 
       final response = await DioService()
           .client
           .post(APIConstants.socialLogin, data: {'data': data});
 
-      // final newUser = UserModel.fromJson(response.data['data']);
+      // print(response.data);
 
-      // await TokenService().saveToken(response.data!['data']['token'], true);
+      // final newUser = UserModel(
+      //   id: _auth.currentUser!.uid,
+      //   email: _auth.currentUser!.email,
+      //   token: response.data['data']['token'],
+      // );
+
+      // print(newUser);
+
+      await TokenService().saveToken(response.data!['data']['token'], true);
+      print('saved token' + '${response.data!['data']['token']}');
+      // // print(newUser);
       // return newUser;
+    } on DioError catch (e) {
+      print(e.message);
+      throw e.message;
+    }
+  }
+
+  Future<UserProfileModel> fetchUserProfile() async {
+    try {
+      final response = await DioService().client.get(APIConstants.userProfile);
       print(response.data);
+      return UserProfileModel.fromJson(response.data);
     } on DioError catch (e) {
       throw e.message;
     }
   }
 
-  void logOut() async {
-    TokenService().removeToken();
+  Future<void> logOut() async {
+    // final token = TokenService().getToken();
+    try {
+      await DioService().client.post(APIConstants.logout);
+
+      TokenService().removeToken();
+    } on DioError catch (e) {
+      print(e.response);
+      throw e.message;
+    }
   }
 }

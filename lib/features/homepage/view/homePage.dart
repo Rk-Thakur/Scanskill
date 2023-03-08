@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:online_learning_app/core/constants/color.dart';
+import 'package:online_learning_app/features/homepage/models/categoryModel.dart';
 import 'package:online_learning_app/features/homepage/view/drawer.dart';
 import 'package:online_learning_app/features/homepage/widgets/appBarWidget.dart';
 import 'package:online_learning_app/features/homepage/widgets/coursesList.dart';
@@ -41,8 +42,16 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void initState() {
+    // final userState = context.watch<AuthenticationBloc>().state;
+    // print(userState.userModel.isLogin);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      endDrawerEnableOpenDragGesture: false,
       endDrawer: const ProfileDrawer(),
       backgroundColor: backGroundColor,
       appBar: const PreferredSize(
@@ -94,7 +103,7 @@ class _HomePageState extends State<HomePage> {
                           CategoryStatus.success) {
                         return Container(
                           width: double.infinity,
-                          height: 110.h,
+                          height: 125.h,
                           child: ListView.separated(
                               separatorBuilder: (context, index) {
                                 return SizedBox(
@@ -107,9 +116,10 @@ class _HomePageState extends State<HomePage> {
                               itemBuilder: (context, index) {
                                 final category = state
                                     .categoryModel.data!.categories![index];
+
                                 return Padding(
-                                  padding: EdgeInsets.only(
-                                      left: 15.sp, top: 5.sp, right: 15.sp),
+                                  padding:
+                                      EdgeInsets.only(left: 10.sp, top: 5.sp),
                                   child: Row(
                                     children: [
                                       GestureDetector(
@@ -138,24 +148,22 @@ class _HomePageState extends State<HomePage> {
                                                   ? selectedColor
                                                   : unselectedColor,
                                             ),
-                                            child: Icon(
-                                              IconDataSolid(int.parse(
-                                                  '0x${category.icon}')),
-                                              color: _selectedListIndex == index
-                                                  ? Colors.white
-                                                  : listIconColor,
-                                              size: buttonSize,
-                                            ),
+                                            child: checkIcon(category, index),
                                           ),
                                           SizedBox(
                                             height: 10.h,
                                           ),
-                                          Text(
-                                            category.name!,
-                                            style: textStyle(
-                                                color: listTextColor,
-                                                fontSize: 15.sp,
-                                                fontWeight: FontWeight.w600),
+                                          Container(
+                                            width: 95.w,
+                                            height: 40.h,
+                                            child: Text(
+                                              "${category.name}",
+                                              textAlign: TextAlign.center,
+                                              style: textStyle(
+                                                  color: listTextColor,
+                                                  fontSize: 15.sp,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
                                           )
                                         ]),
                                       ),
@@ -182,6 +190,7 @@ class _HomePageState extends State<HomePage> {
                   Expanded(
                     child: CoursesList(
                       isContent: isContent,
+                      categoryId: categoryId,
                     ),
                   ),
                 ],
@@ -227,6 +236,61 @@ class _HomePageState extends State<HomePage> {
       //   ),
       // ),
     );
+  }
+
+  Widget checkIcon(Category category, int index) {
+    String icon = category.icon;
+    var icons = icon.split('-');
+    var iconName = icons[0];
+    var iconType = icons[1].toLowerCase();
+    switch (iconType) {
+      case "brands":
+        return Icon(
+          IconDataBrands(int.parse('0x${iconName}')),
+          color: _selectedListIndex == index ? Colors.white : listIconColor,
+          size: buttonSize,
+        );
+      case "solid":
+        return Icon(
+          IconDataSolid(int.parse('0x${iconName}')),
+          color: _selectedListIndex == index ? Colors.white : listIconColor,
+          size: buttonSize,
+        );
+      case "regular":
+        return Icon(
+          IconDataRegular(int.parse('0x${iconName}')),
+          color: _selectedListIndex == index ? Colors.white : listIconColor,
+          size: buttonSize,
+        );
+      case "light":
+        return Icon(
+          IconDataLight(int.parse('0x${iconName}')),
+          color: _selectedListIndex == index ? Colors.white : listIconColor,
+          size: buttonSize,
+        );
+      case "duotone":
+        return Icon(
+          IconDataDuotone(int.parse('0x${iconName}')),
+          color: _selectedListIndex == index ? Colors.white : listIconColor,
+          size: buttonSize,
+        );
+      default:
+        if (category.name!.length > 0) {
+          final name = category.name![0];
+          return Center(
+            child: Text(
+              "$name",
+              style: textStyle(
+                  fontSize: 40.sp,
+                  fontWeight: FontWeight.bold,
+                  color: _selectedListIndex == index
+                      ? Colors.white
+                      : listIconColor),
+            ),
+          );
+        }
+        return SizedBox.shrink();
+    }
   }
 }
 

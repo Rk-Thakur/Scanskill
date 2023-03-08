@@ -10,6 +10,7 @@ import 'package:online_learning_app/features/homepage/models/content_story.dart'
 import 'package:online_learning_app/features/homepage/models/story_model.dart';
 import 'package:online_learning_app/features/homepage/view/quizPlay.dart';
 import 'package:online_learning_app/features/mediaType/htmlType.dart';
+import 'package:online_learning_app/features/utils/route.dart';
 
 import 'package:video_player/video_player.dart';
 
@@ -95,154 +96,170 @@ class _StoryViewPageState extends State<StoryViewPage>
     ].join(':');
   }
 
+  // double _sliderValue = 0.0;
+  // void _onSliderChanged(double value) {
+  //   setState(() {
+  //     _sliderValue = value;
+  //     _videoPlayerController.seekTo(Duration(seconds: value.toInt()));
+  //   });
+  // }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        backgroundColor: const Color(0xffF8F7F3),
-        body: Builder(builder: (context) {
-          if (content == null || content!.isEmpty) {
-            return Center(
-              child: CircularProgressIndicator(
-                color: iconColor,
+      child: WillPopScope(
+        onWillPop: () async {
+          Navigator.pop(context);
+          return true;
+        },
+        child: Scaffold(
+          backgroundColor: const Color(0xffF8F7F3),
+          body: Builder(builder: (context) {
+            if (content == null || content!.isEmpty) {
+              return Center(
+                child: CircularProgressIndicator(
+                  color: iconColor,
+                ),
+              );
+            }
+            final TypeDescription story = content![currentIndex];
+            final stateCategory = context.watch<CategoryBloc>().state;
+
+            return GestureDetector(
+              onLongPress: () {
+                animationController!.stop();
+              },
+              onLongPressCancel: () {
+                setState(() {
+                  animationController!.forward();
+                });
+              },
+              onTapDown: (details) => _onTapDown(details, story, stateCategory),
+              child: Stack(
+                children: [
+                  BlocBuilder<CategoryBloc, CategoryState>(
+                    builder: (context, state) {
+                      if (state.categoryByIdContentStatus ==
+                          CategoryByIdContentStatus.loading) {
+                        return Center(
+                          child: CircularProgressIndicator(
+                            color: iconColor,
+                          ),
+                        );
+                      }
+                      if (state.categoryByIdContentStatus ==
+                          CategoryByIdContentStatus.success) {
+                        return PageView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            controller: pageController,
+                            itemCount: content!.length,
+                            itemBuilder: (context, index) {
+                              switch (story.type) {
+                                case 'image':
+                                  if (story.imageUrl != null) {
+                                    return CachedNetworkImage(
+                                      placeholder: (context, url) {
+                                        return Center(
+                                            child: CircularProgressIndicator(
+                                          color: iconColor,
+                                        ));
+                                      },
+                                      imageUrl: story.imageUrl!,
+                                      fit: BoxFit.fitWidth,
+                                      width: MediaQuery.of(context).size.width,
+                                      height:
+                                          MediaQuery.of(context).size.height,
+                                    );
+                                  } else {
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        color: iconColor,
+                                      ),
+                                    );
+                                  }
+
+                                case 'video':
+                                  if (_videoPlayerController != null &&
+                                      _videoPlayerController
+                                          .value.isInitialized) {
+                                    return videoWidget();
+                                  } else {
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        color: iconColor,
+                                      ),
+                                    );
+                                  }
+                                case 'article':
+                                  animationController!.stop();
+                                  if (story.article != null) {
+                                    return HtmlTypePage(
+                                      htmlData: story.article,
+                                    );
+                                  } else {
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        color: iconColor,
+                                      ),
+                                    );
+                                  }
+
+                                case 'text':
+                                  return const Center(
+                                    child: Text("text"),
+                                  );
+                                // return Center(
+                                //   child: Text(story.),
+                                // );
+                                // case MediaType.quiz:
+                                //   animationController!.stop();
+                                //   return QuizPlayScreen(
+                                //     name: story.url,
+                                //   );
+                              }
+                              return const SizedBox.shrink();
+                            });
+                      } else {
+                        return Container();
+                      }
+                    },
+                  ),
+                  Positioned(
+                      top: 10.0,
+                      left: 10.0,
+                      right: 10.0,
+                      child: Column(
+                        children: [
+                          Row(
+                            children: content!
+                                .asMap()
+                                .map((i, e) {
+                                  return MapEntry(
+                                    i,
+                                    AnimatedBar(
+                                      animationController: animationController!,
+                                      position: i,
+                                      currentIndex: currentIndex,
+                                    ),
+                                  );
+                                })
+                                .values
+                                .toList(),
+                          ),
+
+                          // Padding(
+                          //     padding: EdgeInsets.symmetric(
+                          //         horizontal: 1.5, vertical: 5.sp),
+                          //     child: UserInfo(
+                          //       name: widget.name,
+                          //     )),
+                        ],
+                      )),
+                ],
               ),
             );
-          }
-          final TypeDescription story = content![currentIndex];
-
-          return GestureDetector(
-            onLongPress: () {
-              animationController!.stop();
-            },
-            onLongPressCancel: () {
-              setState(() {
-                animationController!.forward();
-              });
-            },
-            onTapDown: (details) => _onTapDown(details, story),
-            child: Stack(
-              children: [
-                BlocBuilder<CategoryBloc, CategoryState>(
-                  builder: (context, state) {
-                    if (state.categoryByIdContentStatus ==
-                        CategoryByIdContentStatus.loading) {
-                      return Center(
-                        child: CircularProgressIndicator(
-                          color: iconColor,
-                        ),
-                      );
-                    }
-                    if (state.categoryByIdContentStatus ==
-                        CategoryByIdContentStatus.success) {
-                      return PageView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          controller: pageController,
-                          itemCount: content!.length,
-                          itemBuilder: (context, index) {
-                            switch (story.type) {
-                              case 'image':
-                                if (story.imageUrl != null) {
-                                  return CachedNetworkImage(
-                                    placeholder: (context, url) {
-                                      return Center(
-                                          child: CircularProgressIndicator(
-                                        color: iconColor,
-                                      ));
-                                    },
-                                    imageUrl: story.imageUrl!,
-                                    fit: BoxFit.fitWidth,
-                                    width: MediaQuery.of(context).size.width,
-                                    height: MediaQuery.of(context).size.height,
-                                  );
-                                } else {
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      color: iconColor,
-                                    ),
-                                  );
-                                }
-
-                              case 'video':
-                                if (_videoPlayerController != null &&
-                                    _videoPlayerController
-                                        .value.isInitialized) {
-                                  return videoWidget();
-                                } else {
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      color: iconColor,
-                                    ),
-                                  );
-                                }
-                              case 'article':
-                                animationController!.stop();
-                                if (story.article != null) {
-                                  return HtmlTypePage(
-                                    htmlData: story.article,
-                                  );
-                                } else {
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      color: iconColor,
-                                    ),
-                                  );
-                                }
-
-                              case 'text':
-                                return const Center(
-                                  child: Text("text"),
-                                );
-                              // return Center(
-                              //   child: Text(story.),
-                              // );
-                              // case MediaType.quiz:
-                              //   animationController!.stop();
-                              //   return QuizPlayScreen(
-                              //     name: story.url,
-                              //   );
-                            }
-                            return const SizedBox.shrink();
-                          });
-                    } else {
-                      return Container();
-                    }
-                  },
-                ),
-                Positioned(
-                    top: 10.0,
-                    left: 10.0,
-                    right: 10.0,
-                    child: Column(
-                      children: [
-                        Row(
-                          children: content!
-                              .asMap()
-                              .map((i, e) {
-                                return MapEntry(
-                                  i,
-                                  AnimatedBar(
-                                    animationController: animationController!,
-                                    position: i,
-                                    currentIndex: currentIndex,
-                                  ),
-                                );
-                              })
-                              .values
-                              .toList(),
-                        ),
-
-                        // Padding(
-                        //     padding: EdgeInsets.symmetric(
-                        //         horizontal: 1.5, vertical: 5.sp),
-                        //     child: UserInfo(
-                        //       name: widget.name,
-                        //     )),
-                      ],
-                    )),
-              ],
-            ),
-          );
-        }),
+          }),
+        ),
       ),
     );
   }
@@ -308,7 +325,8 @@ class _StoryViewPageState extends State<StoryViewPage>
     );
   }
 
-  _onTapDown(TapDownDetails details, TypeDescription story) {
+  _onTapDown(
+      TapDownDetails details, TypeDescription story, CategoryState state) {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
     final double dx = details.globalPosition.dx;
@@ -323,6 +341,22 @@ class _StoryViewPageState extends State<StoryViewPage>
               _videoPlayerController.pause();
             }
           }
+        } else if (currentIndex == 0) {
+          final ancestor = state.categoryByIdContent.data!.ancestor;
+          if (ancestor != null) {
+            setState(() {
+              if (story.type == 'video') {
+                if (_videoPlayerController.value.isPlaying) {
+                  _videoPlayerController.pause();
+                }
+              }
+              Navigator.pushNamed(context, storyScreen);
+
+              context.read<CategoryBloc>().add(FetchCategoryByIdContentEvent(
+                  state.categoryByIdContent.data!.ancestor));
+              print('checking ancestor' + ancestor);
+            });
+          }
         }
       });
     } else if (dx > 3 * screenWidth / 4 && dy < screenHeight / 1.15) {
@@ -335,6 +369,22 @@ class _StoryViewPageState extends State<StoryViewPage>
               _videoPlayerController.pause();
             }
           }
+        } else if (currentIndex + 1 == content!.length) {
+          final descendant = state.categoryByIdContent.data!.descendant;
+          if (descendant != null) {
+            setState(() {
+              if (story.type == 'video') {
+                if (_videoPlayerController.value.isPlaying) {
+                  _videoPlayerController.pause();
+                }
+              }
+              Navigator.pushNamed(context, storyScreen);
+
+              context.read<CategoryBloc>().add(FetchCategoryByIdContentEvent(
+                  state.categoryByIdContent.data!.descendant));
+              print('checking descendant' + descendant);
+            });
+          }
         }
         // else {
         //   currentIndex = 0;
@@ -342,15 +392,17 @@ class _StoryViewPageState extends State<StoryViewPage>
         // }
       });
     } else if (dx < screenWidth / 1.5 && dy < screenHeight / 1.40) {
-      if (story.type == 'video') {
-        if (_videoPlayerController.value.isPlaying) {
-          _videoPlayerController.pause();
-          animationController!.stop();
-        } else {
-          _videoPlayerController.play();
-          animationController!.forward();
+      setState(() {
+        if (story.type == 'video') {
+          if (_videoPlayerController.value.isPlaying) {
+            _videoPlayerController.pause();
+            animationController!.stop();
+          } else {
+            _videoPlayerController.play();
+            animationController!.forward();
+          }
         }
-      }
+      });
     }
   }
 
@@ -371,8 +423,16 @@ class _StoryViewPageState extends State<StoryViewPage>
             if (_videoPlayerController.value.isInitialized) {
               animationController!.duration =
                   _videoPlayerController.value.duration;
+
               _videoPlayerController.play();
               animationController!.forward();
+            } else if (_videoPlayerController.value.isBuffering) {
+              // animationController!.stop();
+              setState(() {
+                animationController!.duration =
+                    _videoPlayerController.value.duration -
+                        _videoPlayerController.value.position;
+              });
             }
           });
         break;

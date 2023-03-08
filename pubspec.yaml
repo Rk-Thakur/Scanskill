@@ -56,6 +56,13 @@ dev_dependencies:
     sdk: flutter
   build_runner: ^1.12.2
   hive_generator: ^1.0.1
+  flutter_launcher_icons: ^0.11.0
+
+flutter_icons:
+  android: true
+  image_path: "assets/scanskill.jpeg"
+  adaptive_icon_background: "#ffffff"
+  adaptive_icon_foreground: "assets/scanskill.jpeg"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

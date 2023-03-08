@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:online_learning_app/core/constants/color.dart';
+import 'package:online_learning_app/core/services/token_services.dart';
 import 'package:online_learning_app/core/ui/textStyle.dart';
 import 'package:online_learning_app/features/authentication/view/loginPage.dart';
+import 'package:online_learning_app/features/homepage/view/homePage.dart';
 import 'package:page_transition/page_transition.dart';
 
 class OnBoardingPage extends StatefulWidget {
@@ -18,6 +20,8 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
   @override
   void initState() {
     _pageController = PageController(initialPage: 0);
+    changeStatus();
+
     super.initState();
   }
 
@@ -25,6 +29,10 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+
+  Future<void> changeStatus() async {
+    await TokenService().saveOnboard();
   }
 
   @override
@@ -40,10 +48,13 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                 alignment: Alignment.topRight,
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.of(context).push(
-                      PageTransition(
-                          type: PageTransitionType.fade, child: LoginPage()),
-                    );
+                    // Navigator.of(context).push(
+                    //   PageTransition(
+                    //       type: PageTransitionType.fade,
+                    //       child: const HomePage()),
+                    // );
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, '/home', (route) => false);
                   },
                   child: Text(
                     "Skip",
@@ -126,11 +137,14 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                             ? _pageController.nextPage(
                                 duration: const Duration(microseconds: 300),
                                 curve: Curves.bounceInOut)
-                            : Navigator.push(
-                                context,
-                                PageTransition(
-                                    type: PageTransitionType.fade,
-                                    child: LoginPage()));
+                            : Navigator.pushNamedAndRemoveUntil(
+                                context, '/home', (route) => false);
+
+                        // : Navigator.push(
+                        //     context,
+                        //     PageTransition(
+                        //         type: PageTransitionType.fade,
+                        //         child: LoginPage()));
                       },
                       child: Icon(
                         Icons.arrow_forward,

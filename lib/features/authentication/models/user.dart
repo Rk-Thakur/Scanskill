@@ -11,25 +11,32 @@
 //       User(name: json['name'], image: json['image']);
 // }
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:hive/hive.dart';
+import 'dart:io';
 
-part 'user.g.dart';
+import 'package:hive/hive.dart';
+import 'package:online_learning_app/features/homepage/view/quizPlay.dart';
+
+// part 'user.g.dart';
 
 @HiveType(typeId: 0)
 class UserModel {
   @HiveField(0)
-  String id;
+  final String? id;
 
   @HiveField(1)
-  String email;
+  final String? email;
 
   @HiveField(2)
-  String token;
+  final String? token;
 
-  UserModel({
+  // @HiveField(3)
+  // final bool? isLogin;
+
+  const UserModel({
     required this.id,
     required this.email,
     required this.token,
+    // required this.isLogin
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -37,6 +44,11 @@ class UserModel {
       id: json['id'],
       token: json['token'],
       email: json['email'],
+      // isLogin: false,
     );
   }
+
+  static const UserModel empty =
+      // UserModel(id: null, email: null, token: null, isLogin: null);
+      UserModel(id: null, email: null, token: null);
 }

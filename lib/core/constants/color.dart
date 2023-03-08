@@ -38,7 +38,7 @@ import 'package:flutter/material.dart';
 // Color listIconColor = const Color(0xff484241);
 // Color progressBarColor = const Color(0xff7EC5BF);
 // Color listTextColor = const Color(0xff484241);
-double buttonSize = 25;
+double buttonSize = 30;
 
 Color backGroundColor = Colors.white;
 Color primaryColor = const Color(0xffEF543E);

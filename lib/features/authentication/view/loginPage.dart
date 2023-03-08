@@ -29,6 +29,7 @@ class _LoginPageState extends State<LoginPage> {
   final formKey = GlobalKey<FormState>();
 
   int? _selectedListIndex;
+  bool isLoading = false;
 
   onButtonTapped(int index) {
     setState(() {
@@ -38,293 +39,312 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<AuthenticationBloc>().state;
     return Scaffold(
-      body:
-          //   BlocListener<AuthenticationBloc, AuthenticationState>(
-          // listener: (context, state) {
-          //   if (state.authStatus == AuthStatus.loggedIn) {
-          //     print('login successfull');
-          //   }
-          // },
-          // child:
-          Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Container(
-              // color: Colors.black,
-              height: 325.h,
-              width: double.infinity,
-              child: Align(
-                alignment: Alignment.center,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.asset(
-                    "assets/scanskill.jpeg",
-                    height: 120.h,
-                  ),
+        body: Stack(
+      children: [
+        BlocListener<AuthenticationBloc, AuthenticationState>(
+          listener: (context, state) {
+            if (state.authStatus == AuthStatus.loggedIn) {
+              Navigator.pushNamed(context, '/home');
+              // Navigator.pop(context);
+            }
+          },
+          child: bodyWidget(context),
+        ),
+        state.authStatus == AuthStatus.logging
+            ? Center(
+                child: CircularProgressIndicator.adaptive(
+                  backgroundColor: iconColor,
+                ),
+              )
+            : Container()
+      ],
+    ));
+  }
+
+  Widget bodyWidget(BuildContext context) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Container(
+            // color: Colors.black,
+            height: 325.h,
+            width: double.infinity,
+            child: Align(
+              alignment: Alignment.center,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.asset(
+                  "assets/scanskill.jpeg",
+                  height: 120.h,
                 ),
               ),
             ),
           ),
-          Expanded(
-              child: Container(
-            height: 330.h,
-            width: double.infinity,
-            decoration: BoxDecoration(
-                color: containerColor,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                )),
-            child: Padding(
-              padding: EdgeInsets.only(top: 10.sp, right: 10.sp, left: 10.sp),
-              child: Builder(builder: (context) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        // Navigator.of(context).push(
-                        //   PageTransition(
-                        //       type: PageTransitionType.fade,
-                        //       child: const HomePage()),
-                        // );
-                        Navigator.pop(context);
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        height: 50.h,
-                        decoration: BoxDecoration(
-                            color: selectedColor,
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Skip For Now',
-                              style: textStyle(
-                                color: white,
-                                letterSpacing: 1,
-                                fontSize: 15.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Container(
-                      height: 60.h,
+        ),
+        Expanded(
+            child: Container(
+          height: 330.h,
+          width: double.infinity,
+          decoration: BoxDecoration(
+              color: containerColor,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              )),
+          child: Padding(
+            padding: EdgeInsets.only(top: 10.sp, right: 10.sp, left: 10.sp),
+            child: Builder(builder: (context) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      // Navigator.of(context).push(
+                      //   PageTransition(
+                      //       type: PageTransitionType.fade,
+                      //       child: const HomePage()),
+                      // );
+                      Navigator.pop(context);
+                    },
+                    child: Container(
                       width: double.infinity,
-                      // color: Colors.pink,
+                      height: 50.h,
+                      decoration: BoxDecoration(
+                          color: selectedColor,
+                          borderRadius: BorderRadius.circular(10)),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            height: 1.h,
-                            width: 56.w,
-                            color: listTextColor,
-                          ),
-                          SizedBox(
-                            width: 16.w,
-                          ),
-                          Text("Or Connect with",
-                              style: textStyle(
-                                color: listTextColor,
-                                fontSize: 12.sp,
-                                letterSpacing: 1,
-                                fontWeight: FontWeight.bold,
-                              )),
-                          SizedBox(
-                            width: 16.w,
-                          ),
-                          Container(
-                            height: 1.h,
-                            width: 56.w,
-                            color: Color(0xff1C1B1F),
+                          Text(
+                            'Skip For Now',
+                            style: textStyle(
+                              color: white,
+                              letterSpacing: 1,
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ],
                       ),
                     ),
-                    // ...socialIcon.map((e) => Column(
-                    //       children: [
-                    //         GestureDetector(
-                    //           onTap: () {
-                    //             Navigator.of(context).push(
-                    //               PageTransition(
-                    //                   type: PageTransitionType.fade,
-                    //                   child: CategoryPage()),
-                    //             );
-                    //           },
-                    //           child: Container(
-                    //             width: double.infinity,
-                    //             height: 50.h,
-                    //             decoration: BoxDecoration(
-                    //                 color: selectedColor,
-                    //                 borderRadius: BorderRadius.circular(10)),
-                    //             child: Row(
-                    //               mainAxisAlignment: MainAxisAlignment.center,
-                    //               children: [
-                    //                 e.icon,
-                    //                 SizedBox(
-                    //                   width: 10.w,
-                    //                 ),
-                    //                 Text(
-                    //                   e.name,
-                    //                   style: textStyle(
-                    //                     color: Colors.white,
-                    //                     fontSize: 15.sp,
-                    //                     letterSpacing: 1,
-                    //                     fontWeight: FontWeight.bold,
-                    //                   ),
-                    //                 ),
-                    //               ],
-                    //             ),
-                    //           ),
-                    //         ),
-                    //         SizedBox(
-                    //           height: 15.h,
-                    //         ),
-                    //       ],
-                    //     ))
-                    GestureDetector(
-                      onTap: () {
-                        context
-                            .read<AuthenticationBloc>()
-                            .add(AuthenticationGoogleStatusChanged());
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        height: 50.h,
-                        decoration: BoxDecoration(
-                            color: selectedColor,
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              FontAwesomeIcons.google,
-                              color: Colors.white,
-                              size: 25.sp,
-                            ),
-                            SizedBox(
-                              width: 10.w,
-                            ),
-                            Text(
-                              'Continue with Google',
-                              style: textStyle(
-                                color: Colors.white,
-                                fontSize: 15.sp,
-                                letterSpacing: 1,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
+                  ),
+                  Container(
+                    height: 60.h,
+                    width: double.infinity,
+                    // color: Colors.pink,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          height: 1.h,
+                          width: 56.w,
+                          color: listTextColor,
                         ),
+                        SizedBox(
+                          width: 16.w,
+                        ),
+                        Text("Or Connect with",
+                            style: textStyle(
+                              color: listTextColor,
+                              fontSize: 12.sp,
+                              letterSpacing: 1,
+                              fontWeight: FontWeight.bold,
+                            )),
+                        SizedBox(
+                          width: 16.w,
+                        ),
+                        Container(
+                          height: 1.h,
+                          width: 56.w,
+                          color: const Color(0xff1C1B1F),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // ...socialIcon.map((e) => Column(
+                  //       children: [
+                  //         GestureDetector(
+                  //           onTap: () {
+                  //             Navigator.of(context).push(
+                  //               PageTransition(
+                  //                   type: PageTransitionType.fade,
+                  //                   child: CategoryPage()),
+                  //             );
+                  //           },
+                  //           child: Container(
+                  //             width: double.infinity,
+                  //             height: 50.h,
+                  //             decoration: BoxDecoration(
+                  //                 color: selectedColor,
+                  //                 borderRadius: BorderRadius.circular(10)),
+                  //             child: Row(
+                  //               mainAxisAlignment: MainAxisAlignment.center,
+                  //               children: [
+                  //                 e.icon,
+                  //                 SizedBox(
+                  //                   width: 10.w,
+                  //                 ),
+                  //                 Text(
+                  //                   e.name,
+                  //                   style: textStyle(
+                  //                     color: Colors.white,
+                  //                     fontSize: 15.sp,
+                  //                     letterSpacing: 1,
+                  //                     fontWeight: FontWeight.bold,
+                  //                   ),
+                  //                 ),
+                  //               ],
+                  //             ),
+                  //           ),
+                  //         ),
+                  //         SizedBox(
+                  //           height: 15.h,
+                  //         ),
+                  //       ],
+                  //     ))
+                  isLoading
+                      ? Center(
+                          child: CircularProgressIndicator.adaptive(
+                            backgroundColor: iconColor,
+                          ),
+                        )
+                      : GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              isLoading = true;
+                            });
+                            context
+                                .read<AuthenticationBloc>()
+                                .add(AuthenticationGoogleStatusChanged());
+
+                            setState(() {
+                              isLoading = false;
+                            });
+                          },
+                          child: Container(
+                            width: double.infinity,
+                            height: 50.h,
+                            decoration: BoxDecoration(
+                                color: selectedColor,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  FontAwesomeIcons.google,
+                                  color: Colors.white,
+                                  size: 25.sp,
+                                ),
+                                SizedBox(
+                                  width: 10.w,
+                                ),
+                                Text(
+                                  'Continue with Google',
+                                  style: textStyle(
+                                    color: Colors.white,
+                                    fontSize: 15.sp,
+                                    letterSpacing: 1,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                  SizedBox(
+                    height: 15.h,
+                  ),
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     // Navigator.of(context).push(
+                  //     //   PageTransition(
+                  //     //       type: PageTransitionType.fade,
+                  //     //       child: CategoryPage()),
+                  //     // );
+                  //   },
+                  //   child: Container(
+                  //     width: double.infinity,
+                  //     height: 50.h,
+                  //     decoration: BoxDecoration(
+                  //         color: selectedColor,
+                  //         borderRadius: BorderRadius.circular(10)),
+                  //     child: Row(
+                  //       mainAxisAlignment: MainAxisAlignment.center,
+                  //       children: [
+                  //         Icon(
+                  //           FontAwesomeIcons.apple,
+                  //           color: Colors.white,
+                  //           size: 27.sp,
+                  //         ),
+                  //         SizedBox(
+                  //           width: 10.w,
+                  //         ),
+                  //         Text(
+                  //           'Continue with Apple',
+                  //           style: textStyle(
+                  //             color: Colors.white,
+                  //             fontSize: 15.sp,
+                  //             letterSpacing: 1,
+                  //             fontWeight: FontWeight.bold,
+                  //           ),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
+                  SizedBox(
+                    height: 15.h,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      // Navigator.of(context).push(
+                      //   PageTransition(
+                      //       type: PageTransitionType.fade,
+                      //       child: CategoryPage()),
+                      // );
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      height: 50.h,
+                      decoration: BoxDecoration(
+                          color: selectedColor,
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            FontAwesomeIcons.github,
+                            color: Colors.white,
+                            size: 25.sp,
+                          ),
+                          SizedBox(
+                            width: 10.w,
+                          ),
+                          Text(
+                            'Continue with Github',
+                            style: textStyle(
+                              color: Colors.white,
+                              fontSize: 15.sp,
+                              letterSpacing: 1,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    SizedBox(
-                      height: 15.h,
-                    ),
-                    // GestureDetector(
-                    //   onTap: () {
-                    //     // Navigator.of(context).push(
-                    //     //   PageTransition(
-                    //     //       type: PageTransitionType.fade,
-                    //     //       child: CategoryPage()),
-                    //     // );
-                    //   },
-                    //   child: Container(
-                    //     width: double.infinity,
-                    //     height: 50.h,
-                    //     decoration: BoxDecoration(
-                    //         color: selectedColor,
-                    //         borderRadius: BorderRadius.circular(10)),
-                    //     child: Row(
-                    //       mainAxisAlignment: MainAxisAlignment.center,
-                    //       children: [
-                    //         Icon(
-                    //           FontAwesomeIcons.apple,
-                    //           color: Colors.white,
-                    //           size: 27.sp,
-                    //         ),
-                    //         SizedBox(
-                    //           width: 10.w,
-                    //         ),
-                    //         Text(
-                    //           'Continue with Apple',
-                    //           style: textStyle(
-                    //             color: Colors.white,
-                    //             fontSize: 15.sp,
-                    //             letterSpacing: 1,
-                    //             fontWeight: FontWeight.bold,
-                    //           ),
-                    //         ),
-                    //       ],
-                    //     ),
-                    //   ),
-                    // ),
-                    SizedBox(
-                      height: 15.h,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        // Navigator.of(context).push(
-                        //   PageTransition(
-                        //       type: PageTransitionType.fade,
-                        //       child: CategoryPage()),
-                        // );
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        height: 50.h,
-                        decoration: BoxDecoration(
-                            color: selectedColor,
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              FontAwesomeIcons.github,
-                              color: Colors.white,
-                              size: 25.sp,
-                            ),
-                            SizedBox(
-                              width: 10.w,
-                            ),
-                            Text(
-                              'Continue with Github',
-                              style: textStyle(
-                                color: Colors.white,
-                                fontSize: 15.sp,
-                                letterSpacing: 1,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 15.h,
-                    ),
-                  ],
-                );
-              }),
-            ),
-          )),
-        ],
-      ),
+                  ),
+                  SizedBox(
+                    height: 15.h,
+                  ),
+                ],
+              );
+            }),
+          ),
+        )),
+      ],
     );
   }
-}
-
-class SocialIcon {
-  Icon icon;
-  String name;
-  SocialIcon({
-    required this.icon,
-    required this.name,
-  });
 }

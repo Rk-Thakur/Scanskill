@@ -1,8 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:online_learning_app/core/services/token_services.dart';
 import 'package:online_learning_app/core/ui/textStyle.dart';
+import 'package:online_learning_app/features/authentication/bloc/authentication_bloc.dart';
 
 class SplashScreenPage extends StatefulWidget {
   const SplashScreenPage({Key? key}) : super(key: key);
@@ -15,9 +18,17 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
   @override
   void initState() {
     super.initState();
+    checkOnBoard();
+  }
 
-    Future.delayed(const Duration(seconds: 4),
-        () => Navigator.pushNamed(context, '/home'));
+  Future<void> checkOnBoard() async {
+    final onBoard = await TokenService().getOnBoard();
+    if (onBoard == true) {
+      Future.delayed(const Duration(seconds: 4),
+          () => Navigator.pushNamed(context, '/home'));
+    } else {
+      Navigator.pushNamedAndRemoveUntil(context, '/onBoard', (route) => false);
+    }
   }
 
   @override

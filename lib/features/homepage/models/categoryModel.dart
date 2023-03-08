@@ -80,7 +80,7 @@ class Category {
   final String? name;
   final String? slug;
   final dynamic parentId;
-  final String? icon;
+  final icon;
   final String? description;
   final String? status;
   final DateTime? createdAt;

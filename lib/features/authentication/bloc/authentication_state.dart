@@ -9,21 +9,29 @@ enum AuthStatus {
   failure,
 }
 
+enum ProfileStatus { initial, loading, loaded, failure }
+
 class AuthenticationState extends Equatable {
   final AuthStatus authStatus;
-  AuthenticationState({
-    this.authStatus = AuthStatus.initial,
-  });
+  final ProfileStatus profileStatus;
+  final UserProfileModel userProfileModel;
+  AuthenticationState(
+      {this.authStatus = AuthStatus.initial,
+      this.profileStatus = ProfileStatus.initial,
+      this.userProfileModel = UserProfileModel.empty});
 
-  AuthenticationState copyWith({
-    AuthStatus? authStatus,
-  }) {
+  AuthenticationState copyWith(
+      {AuthStatus? authStatus,
+      UserProfileModel? userProfileModel,
+      ProfileStatus? profileStatus}) {
     return AuthenticationState(
       authStatus: authStatus ?? this.authStatus,
+      profileStatus: profileStatus ?? this.profileStatus,
+      userProfileModel: userProfileModel ?? this.userProfileModel,
     );
   }
 
   @override
   // TODO: implement props
-  List<Object?> get props => [authStatus];
+  List<Object?> get props => [authStatus, profileStatus, userProfileModel];
 }

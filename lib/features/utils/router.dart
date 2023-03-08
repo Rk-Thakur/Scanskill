@@ -13,14 +13,21 @@ import 'package:online_learning_app/features/utils/route.dart';
 
 class AppRouter {
   final CategoryBloc categoryBloc = CategoryBloc();
-  final AuthenticationBloc authenticationBloc;
-  AppRouter(this.authenticationBloc);
+  final AuthenticationBloc authenticationBloc = AuthenticationBloc();
+  AppRouter();
   final AuthRepository authRepository = AuthRepository();
   Route<dynamic> onGeneratorRoute(RouteSettings routeSettings) {
     switch (routeSettings.name) {
       case splashScreen:
         return MaterialPageRoute(builder: (_) {
-          return const SplashScreenPage();
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: authenticationBloc..add(CheckLoginEvent()),
+              ),
+            ],
+            child: const SplashScreenPage(),
+          );
         });
       case onBoardScreen:
         return MaterialPageRoute(builder: (_) {
@@ -36,6 +43,12 @@ class AppRouter {
               ),
               BlocProvider.value(
                 value: categoryBloc..add(FetchAllContentEvent()),
+              ),
+              // BlocProvider.value(
+              //   value: authenticationBloc..add(FetchUserProfileEvent()),
+              // ),
+              BlocProvider.value(
+                value: authenticationBloc,
               ),
             ],
             child: const HomePage(),
@@ -55,16 +68,14 @@ class AppRouter {
       case loginScreen:
         return MaterialPageRoute(builder: (_) {
           return MultiBlocProvider(
-            providers: [
-              BlocProvider<AuthenticationBloc>(
-                  create: (context) =>
-                      AuthenticationBloc(authRepository: authRepository)),
-              BlocProvider.value(value: authenticationBloc)
-            ],
-            child: Builder(builder: (context) {
-              return LoginPage();
-            }),
-          );
+              providers: [
+                BlocProvider<AuthenticationBloc>(
+                    create: (context) => AuthenticationBloc()),
+                BlocProvider.value(value: authenticationBloc)
+              ],
+              child: Builder(builder: (context) {
+                return LoginPage();
+              }));
         });
 
       default:
@@ -74,6 +85,7 @@ class AppRouter {
 
   void dispose() {
     categoryBloc.close();
+    authenticationBloc.close();
   }
 }
 

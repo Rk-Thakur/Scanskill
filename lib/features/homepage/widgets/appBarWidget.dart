@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:online_learning_app/core/constants/color.dart';
 
 import 'package:online_learning_app/core/ui/textStyle.dart';
+
+import '../../../core/services/token_services.dart';
+import '../../authentication/bloc/authentication_bloc.dart';
 
 class appBarWidget extends StatelessWidget {
   const appBarWidget({
@@ -11,6 +15,8 @@ class appBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final token = TokenService().getToken();
+
     return AppBar(
       backgroundColor: backGroundColor,
       centerTitle: true,
@@ -44,14 +50,18 @@ class appBarWidget extends StatelessWidget {
       // ),
       actions: [
         IconButton(
-            icon: const CircleAvatar(
-              backgroundImage: AssetImage('assets/scanskill.jpeg'),
-              radius: 50,
-            ),
-            tooltip: 'Comment Icon',
-            onPressed: () {
-              Scaffold.of(context).openEndDrawer();
-            }),
+          icon: const CircleAvatar(
+            backgroundImage: AssetImage('assets/scanskill.jpeg'),
+            radius: 50,
+          ),
+          // tooltip: 'Comment Icon',
+          onPressed: () {
+            if (token != null) {
+              context.read<AuthenticationBloc>().add(FetchUserProfileEvent());
+            }
+            Scaffold.of(context).openEndDrawer();
+          },
+        )
       ],
     );
   }
