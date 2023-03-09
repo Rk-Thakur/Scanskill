@@ -4,6 +4,7 @@ import 'package:online_learning_app/core/constants/color.dart';
 import 'package:online_learning_app/core/services/token_services.dart';
 import 'package:online_learning_app/core/ui/textStyle.dart';
 import 'package:online_learning_app/features/authentication/bloc/authentication_bloc.dart';
+import 'package:online_learning_app/features/utils/route.dart';
 
 class ProfileDrawer extends StatelessWidget {
   const ProfileDrawer({
@@ -17,11 +18,12 @@ class ProfileDrawer extends StatelessWidget {
       child: BlocListener<AuthenticationBloc, AuthenticationState>(
         listener: (context, state) {
           if (state.authStatus == AuthStatus.loggedOut) {
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              '/home',
-              (route) => false,
-            );
+            // Navigator.pushNamedAndRemoveUntil(
+            //   context,
+            //   '/home',
+            //   (route) => false,
+            // );
+            Navigator.popAndPushNamed(context, homeScreen);
           }
         },
         child: token != null

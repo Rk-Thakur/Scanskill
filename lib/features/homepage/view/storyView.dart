@@ -1,14 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:online_learning_app/core/constants/color.dart';
 import 'package:online_learning_app/features/homepage/bloc/catergory_bloc.dart';
 import 'package:online_learning_app/features/homepage/models/category_by_id_content.dart';
-import 'package:online_learning_app/features/homepage/models/content_story.dart';
-import 'package:online_learning_app/features/homepage/models/story_model.dart';
-import 'package:online_learning_app/features/homepage/view/quizPlay.dart';
+
 import 'package:online_learning_app/features/mediaType/htmlType.dart';
 import 'package:online_learning_app/features/utils/route.dart';
 
@@ -109,7 +106,7 @@ class _StoryViewPageState extends State<StoryViewPage>
     return SafeArea(
       child: WillPopScope(
         onWillPop: () async {
-          Navigator.pop(context);
+          Navigator.popAndPushNamed(context, homeScreen);
           return true;
         },
         child: Scaffold(
@@ -307,6 +304,7 @@ class _StoryViewPageState extends State<StoryViewPage>
                         playedColor: iconColor),
                     allowScrubbing: true),
               )),
+
               // Text(
               //   _videoDuration(_videoPlayerController.value.duration),
               //   style: TextStyle(color: textColor, fontSize: 15),
@@ -426,6 +424,9 @@ class _StoryViewPageState extends State<StoryViewPage>
 
               _videoPlayerController.play();
               animationController!.forward();
+            } else if (_videoPlayerController.value.isBuffering) {
+              _videoPlayerController.pause();
+              animationController!.stop();
             }
             //  else if (_videoPlayerController.value.isBuffering) {
             //   // animationController!.stop();
