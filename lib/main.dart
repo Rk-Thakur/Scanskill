@@ -9,6 +9,7 @@ import 'package:online_learning_app/core/constants/color.dart';
 import 'package:online_learning_app/core/services/dio_service.dart';
 import 'package:online_learning_app/core/services/token_services.dart';
 import 'package:online_learning_app/features/authentication/bloc/authentication_bloc.dart';
+import 'package:online_learning_app/features/homepage/view/homePage.dart';
 import 'package:online_learning_app/features/utils/router.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -54,7 +55,6 @@ class MyApp extends StatelessWidget {
               primaryColor: primaryColor,
             ),
             debugShowCheckedModeBanner: false,
-            // home: VideoPlayerScreen()
             onGenerateRoute: appRouter.onGeneratorRoute,
           ),
         );

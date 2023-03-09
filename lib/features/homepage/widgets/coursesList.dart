@@ -562,14 +562,14 @@ class _CoursesListState extends State<CoursesList> {
                                                   FetchCategoryByIdContentEvent(
                                                       contentbyId.id!));
                                               Navigator.pushNamed(
-                                                  context, storyScreen);
+                                                  context, '/storyScreen');
                                             }
                                           } else {
                                             context.read<CategoryBloc>().add(
                                                 FetchCategoryByIdContentEvent(
                                                     contentbyId.id!));
                                             Navigator.pushNamed(
-                                                context, storyScreen);
+                                                context, '/storyScreen');
                                           }
                                         },
                                         child: ClipRRect(

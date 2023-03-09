@@ -6,6 +6,8 @@ import 'package:online_learning_app/core/ui/textStyle.dart';
 import 'package:online_learning_app/features/authentication/bloc/authentication_bloc.dart';
 import 'package:online_learning_app/features/utils/route.dart';
 
+import '../bloc/catergory_bloc.dart';
+
 class ProfileDrawer extends StatelessWidget {
   const ProfileDrawer({
     Key? key,
@@ -17,13 +19,15 @@ class ProfileDrawer extends StatelessWidget {
     return Drawer(
       child: BlocListener<AuthenticationBloc, AuthenticationState>(
         listener: (context, state) {
-          if (state.authStatus == AuthStatus.loggedOut) {
-            // Navigator.pushNamedAndRemoveUntil(
-            //   context,
-            //   '/home',
-            //   (route) => false,
-            // );
-            Navigator.popAndPushNamed(context, homeScreen);
+          if (state.authStatus == AuthStatus.logging) {
+            Center(
+              child: CircularProgressIndicator(color: iconColor),
+            );
+          } else if (state.authStatus == AuthStatus.loggedOut) {
+            Scaffold.of(context).closeEndDrawer();
+
+            Navigator.of(context)
+                .pushNamedAndRemoveUntil('/home', (route) => false);
           }
         },
         child: token != null
@@ -111,6 +115,7 @@ class ProfileDrawer extends StatelessWidget {
                     title: const Text('LogOut'),
                     onTap: () {
                       print('logout');
+
                       context
                           .read<AuthenticationBloc>()
                           .add(AuthenticationLogoutRequested());

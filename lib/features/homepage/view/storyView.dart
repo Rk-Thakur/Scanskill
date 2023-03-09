@@ -8,6 +8,7 @@ import 'package:online_learning_app/features/homepage/models/category_by_id_cont
 
 import 'package:online_learning_app/features/mediaType/htmlType.dart';
 import 'package:online_learning_app/features/utils/route.dart';
+import 'package:online_learning_app/main.dart';
 
 import 'package:video_player/video_player.dart';
 
@@ -106,7 +107,7 @@ class _StoryViewPageState extends State<StoryViewPage>
     return SafeArea(
       child: WillPopScope(
         onWillPop: () async {
-          Navigator.popAndPushNamed(context, homeScreen);
+          Navigator.pop(context);
           return true;
         },
         child: Scaffold(
@@ -309,7 +310,6 @@ class _StoryViewPageState extends State<StoryViewPage>
               //   _videoDuration(_videoPlayerController.value.duration),
               //   style: TextStyle(color: textColor, fontSize: 15),
               // )
-
               // IconButton(
               //     onPressed: () {
               //       SystemChrome.setPreferredOrientations(
@@ -346,6 +346,7 @@ class _StoryViewPageState extends State<StoryViewPage>
               if (story.type == 'video') {
                 if (_videoPlayerController.value.isPlaying) {
                   _videoPlayerController.pause();
+                  animationController!.stop();
                 }
               }
               Navigator.pushNamed(context, storyScreen);
@@ -354,6 +355,8 @@ class _StoryViewPageState extends State<StoryViewPage>
                   state.categoryByIdContent.data!.ancestor));
               print('checking ancestor' + ancestor);
             });
+          } else {
+            Navigator.pop(context);
           }
         }
       });
@@ -374,6 +377,7 @@ class _StoryViewPageState extends State<StoryViewPage>
               if (story.type == 'video') {
                 if (_videoPlayerController.value.isPlaying) {
                   _videoPlayerController.pause();
+                  animationController!.stop();
                 }
               }
               Navigator.pushNamed(context, storyScreen);
@@ -382,6 +386,8 @@ class _StoryViewPageState extends State<StoryViewPage>
                   state.categoryByIdContent.data!.descendant));
               print('checking descendant' + descendant);
             });
+          } else {
+            Navigator.pop(context);
           }
         }
         // else {
@@ -424,17 +430,10 @@ class _StoryViewPageState extends State<StoryViewPage>
 
               _videoPlayerController.play();
               animationController!.forward();
-            } else if (_videoPlayerController.value.isBuffering) {
-              _videoPlayerController.pause();
-              animationController!.stop();
             }
-            //  else if (_videoPlayerController.value.isBuffering) {
-            //   // animationController!.stop();
-            //   setState(() {
-            //     animationController!.duration =
-            //         _videoPlayerController.value.duration -
-            //             _videoPlayerController.value.position;
-            //   });
+            // else {
+            //   _videoPlayerController.pause();
+            //   animationController!.stop();
             // }
           });
         break;
