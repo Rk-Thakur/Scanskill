@@ -105,6 +105,9 @@ class _StoryViewPageState extends State<StoryViewPage>
     return SafeArea(
       child: WillPopScope(
         onWillPop: () async {
+          // Navigator.popUntil(
+          //     context, ModalRoute.withName(Navigator.defaultRouteName));
+          // Navigator.popAndPushNamed(context, '/home');
           Navigator.pop(context);
           return true;
         },
@@ -155,10 +158,15 @@ class _StoryViewPageState extends State<StoryViewPage>
                                   if (story.imageUrl != null) {
                                     return CachedNetworkImage(
                                       placeholder: (context, url) {
-                                        return Center(
-                                            child: CircularProgressIndicator(
-                                          color: iconColor,
-                                        ));
+                                        return Column(
+                                          children: [
+                                            Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                              color: iconColor,
+                                            )),
+                                          ],
+                                        );
                                       },
                                       imageUrl: story.imageUrl!,
                                       fit: BoxFit.fitWidth,
