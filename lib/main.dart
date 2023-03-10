@@ -54,6 +54,7 @@ class MyApp extends StatelessWidget {
             theme: ThemeData(
               primaryColor: primaryColor,
             ),
+            // initialRoute: '/home',
             debugShowCheckedModeBanner: false,
             onGenerateRoute: appRouter.onGeneratorRoute,
           ),

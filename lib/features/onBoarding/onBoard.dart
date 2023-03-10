@@ -95,17 +95,20 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(40.0)),
                         ),
-                        onPressed: () async {
-                          _pagaeIndex != demo_data.length
-                              ? _pageController.previousPage(
-                                  duration: const Duration(microseconds: 300),
-                                  curve: Curves.bounceInOut)
-                              : Navigator.of(context).push(
-                                  PageTransition(
-                                      type: PageTransitionType.fade,
-                                      child: LoginPage()),
-                                );
-                        },
+                        onPressed: _pagaeIndex == 0
+                            ? null
+                            : () async {
+                                _pagaeIndex != demo_data.length
+                                    ? _pageController.previousPage(
+                                        duration:
+                                            const Duration(microseconds: 300),
+                                        curve: Curves.bounceInOut)
+                                    : Navigator.of(context).push(
+                                        PageTransition(
+                                            type: PageTransitionType.fade,
+                                            child: LoginPage()),
+                                      );
+                              },
                         child: Icon(
                           Icons.arrow_back,
                           color: iconColor,

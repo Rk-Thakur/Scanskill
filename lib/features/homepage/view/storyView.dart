@@ -8,13 +8,11 @@ import 'package:online_learning_app/features/homepage/models/category_by_id_cont
 
 import 'package:online_learning_app/features/mediaType/htmlType.dart';
 import 'package:online_learning_app/features/utils/route.dart';
-import 'package:online_learning_app/main.dart';
 
 import 'package:video_player/video_player.dart';
 
 class StoryViewPage extends StatefulWidget {
   StoryViewPage({Key? key}) : super(key: key);
-
   @override
   State<StoryViewPage> createState() => _StoryViewPageState();
 }
