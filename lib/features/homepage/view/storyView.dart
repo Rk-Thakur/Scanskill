@@ -158,15 +158,10 @@ class _StoryViewPageState extends State<StoryViewPage>
                                   if (story.imageUrl != null) {
                                     return CachedNetworkImage(
                                       placeholder: (context, url) {
-                                        return Column(
-                                          children: [
-                                            Center(
-                                                child:
-                                                    CircularProgressIndicator(
-                                              color: iconColor,
-                                            )),
-                                          ],
-                                        );
+                                        return Center(
+                                            child: CircularProgressIndicator(
+                                          color: iconColor,
+                                        ));
                                       },
                                       imageUrl: story.imageUrl!,
                                       fit: BoxFit.fitWidth,
