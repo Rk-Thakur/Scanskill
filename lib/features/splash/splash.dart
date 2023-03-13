@@ -24,8 +24,10 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
   Future<void> checkOnBoard() async {
     final onBoard = await TokenService().getOnBoard();
     if (onBoard == true) {
-      Future.delayed(const Duration(seconds: 4),
-          () => Navigator.pushNamed(context, '/home'));
+      Future.delayed(
+          const Duration(seconds: 4),
+          () => Navigator.pushNamedAndRemoveUntil(
+              context, '/home', (route) => false));
     } else {
       Navigator.pushNamedAndRemoveUntil(context, '/onBoard', (route) => false);
     }

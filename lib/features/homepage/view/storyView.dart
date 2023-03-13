@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:online_learning_app/core/constants/color.dart';
 import 'package:online_learning_app/features/homepage/bloc/catergory_bloc.dart';
 import 'package:online_learning_app/features/homepage/models/category_by_id_content.dart';
+import 'package:online_learning_app/features/homepage/view/homePage.dart';
 
 import 'package:online_learning_app/features/mediaType/htmlType.dart';
 import 'package:online_learning_app/features/utils/route.dart';
@@ -388,7 +389,20 @@ class _StoryViewPageState extends State<StoryViewPage>
               print('checking descendant' + descendant);
             });
           } else {
-            Navigator.pop(context);
+            // final navigator = Navigator.of(context);
+
+            // if (navigator.canPop()) {
+            //   navigator.pop();
+            // } else {
+            //   Navigator.pushNamed(context, '/home');
+            // }
+            // Navigator.pushReplacementNamed(context, '/home');
+            // final route = PageRouteBuilder(
+            //     pageBuilder: (context, animation, secondaryAnimation) =>
+            //         HomePage(),
+            //     maintainState: true);
+            // Navigator.push(context, route);
+            Navigator.of(context).pop();
           }
         }
         // else {

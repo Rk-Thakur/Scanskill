@@ -606,7 +606,9 @@ class _CoursesListState extends State<CoursesList> {
                                                             (index % 2 == 0 &&
                                                                     index >
                                                                         2) &&
-                                                                index != 8)
+                                                                index != 8 &&
+                                                                index != 14 &&
+                                                                index != 20)
                                                         ? Align(
                                                             alignment: Alignment
                                                                 .topLeft,
