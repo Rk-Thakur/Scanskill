@@ -44,9 +44,6 @@ class AppRouter {
               BlocProvider.value(
                 value: categoryBloc..add(FetchAllContentEvent()),
               ),
-              // BlocProvider.value(
-              //   value: authenticationBloc..add(FetchUserProfileEvent()),
-              // ),
               BlocProvider.value(
                 value: authenticationBloc,
               ),
