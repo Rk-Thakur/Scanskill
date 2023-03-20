@@ -9,7 +9,7 @@ import 'package:online_learning_app/core/constants/color.dart';
 import 'package:online_learning_app/core/services/dio_service.dart';
 import 'package:online_learning_app/core/services/token_services.dart';
 import 'package:online_learning_app/features/authentication/bloc/authentication_bloc.dart';
-import 'package:online_learning_app/features/homepage/view/homePage.dart';
+
 import 'package:online_learning_app/features/utils/router.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AppRouter appRouter = AppRouter();
-
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     return ScreenUtilInit(
       designSize: const Size(390, 720),
       minTextAdapt: true,
@@ -54,6 +54,8 @@ class MyApp extends StatelessWidget {
             theme: ThemeData(
               primaryColor: primaryColor,
             ),
+            // initialRoute: '/home',
+            // home: StoryPage(storymodel: firststories),
             debugShowCheckedModeBanner: false,
             onGenerateRoute: appRouter.onGeneratorRoute,
           ),
