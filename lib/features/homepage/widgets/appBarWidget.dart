@@ -55,8 +55,8 @@ class appBarWidget extends StatelessWidget {
                   backgroundImage: AssetImage('assets/scanskill.jpeg'),
                   radius: 50,
                 ),
-                // tooltip: 'Comment Icon',
                 onPressed: () {
+                  print("profile drawer open");
                   context
                       .read<AuthenticationBloc>()
                       .add(FetchUserProfileEvent());
@@ -64,7 +64,7 @@ class appBarWidget extends StatelessWidget {
                   Scaffold.of(context).openEndDrawer();
                 },
               )
-            : Container()
+            : SizedBox.shrink()
       ],
     );
   }

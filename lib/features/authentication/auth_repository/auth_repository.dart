@@ -69,10 +69,8 @@ class AuthRepository {
   }
 
   Future<void> logOut() async {
-    // final token = TokenService().getToken();
     try {
       await DioService().client.post(APIConstants.logout);
-
       TokenService().removeToken();
     } on DioError catch (e) {
       print(e.response);

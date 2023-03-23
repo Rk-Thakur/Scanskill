@@ -19,19 +19,21 @@ class StoryViewPage extends StatefulWidget {
 }
 
 class _StoryViewPageState extends State<StoryViewPage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   PageController? pageController;
   AnimationController? animationController;
   late VideoPlayerController _videoPlayerController;
   int currentIndex = 0;
   bool isLoaded = true;
   var network = '';
-  List<TypeDescription>? content;
+  List<TypeDescription> content = [];
 
   @override
   void didChangeDependencies() {
+    print('calling');
     final state = context.watch<CategoryBloc>().state;
     if (state.categoryByIdContentStatus == CategoryByIdContentStatus.success) {
+      print("success");
       pageController = PageController();
       animationController = AnimationController(vsync: this);
 
@@ -40,6 +42,14 @@ class _StoryViewPageState extends State<StoryViewPage>
               isLoaded = true;
             }));
       _videoPlayerController.play();
+      content.clear();
+
+      if (mounted) {
+        setState(() {
+          currentIndex = 0;
+        });
+      }
+
       content = state.categoryByIdContent.data!.typeDescriptions!;
       final TypeDescription firstStory =
           state.categoryByIdContent.data!.typeDescriptions!.first;
@@ -106,23 +116,21 @@ class _StoryViewPageState extends State<StoryViewPage>
     return SafeArea(
       child: WillPopScope(
         onWillPop: () async {
-          // Navigator.popUntil(
-          //     context, ModalRoute.withName(Navigator.defaultRouteName));
-          // Navigator.popAndPushNamed(context, '/home');
           Navigator.pop(context);
           return true;
         },
         child: Scaffold(
           backgroundColor: const Color(0xffF8F7F3),
           body: Builder(builder: (context) {
-            if (content == null || content!.isEmpty) {
+            print(content);
+            if (content == null || content.isEmpty) {
               return Center(
                 child: CircularProgressIndicator(
                   color: iconColor,
                 ),
               );
             }
-            final TypeDescription story = content![currentIndex];
+            final TypeDescription story = content[currentIndex];
             final stateCategory = context.watch<CategoryBloc>().state;
 
             return GestureDetector(
@@ -152,7 +160,7 @@ class _StoryViewPageState extends State<StoryViewPage>
                         return PageView.builder(
                             physics: const NeverScrollableScrollPhysics(),
                             controller: pageController,
-                            itemCount: content!.length,
+                            itemCount: content.length,
                             itemBuilder: (context, index) {
                               switch (story.type) {
                                 case 'image':
@@ -231,7 +239,7 @@ class _StoryViewPageState extends State<StoryViewPage>
                       child: Column(
                         children: [
                           Row(
-                            children: content!
+                            children: content
                                 .asMap()
                                 .map((i, e) {
                                   return MapEntry(
@@ -335,7 +343,7 @@ class _StoryViewPageState extends State<StoryViewPage>
       setState(() {
         if (currentIndex - 1 >= 0) {
           currentIndex -= 1;
-          _loadStory(story: content![currentIndex]);
+          _loadStory(story: content[currentIndex]);
           if (story.type == 'video') {
             if (_videoPlayerController.value.isPlaying) {
               _videoPlayerController.pause();
@@ -351,8 +359,7 @@ class _StoryViewPageState extends State<StoryViewPage>
                   animationController!.stop();
                 }
               }
-              Navigator.pushNamed(context, storyScreen);
-
+              // Navigator.pushNamed(context, storyScreen);
               context.read<CategoryBloc>().add(FetchCategoryByIdContentEvent(
                   state.categoryByIdContent.data!.ancestor));
               print('checking ancestor' + ancestor);
@@ -364,15 +371,15 @@ class _StoryViewPageState extends State<StoryViewPage>
       });
     } else if (dx > 3 * screenWidth / 4 && dy < screenHeight / 1.15) {
       setState(() {
-        if (currentIndex + 1 < content!.length) {
+        if (currentIndex + 1 < content.length) {
           currentIndex += 1;
-          _loadStory(story: content![currentIndex]);
+          _loadStory(story: content[currentIndex]);
           if (story.type == 'video') {
             if (_videoPlayerController.value.isPlaying) {
               _videoPlayerController.pause();
             }
           }
-        } else if (currentIndex + 1 == content!.length) {
+        } else if (currentIndex + 1 == content.length) {
           final descendant = state.categoryByIdContent.data!.descendant;
           if (descendant != null) {
             setState(() {
@@ -382,8 +389,6 @@ class _StoryViewPageState extends State<StoryViewPage>
                   animationController!.stop();
                 }
               }
-              Navigator.pushNamed(context, storyScreen);
-
               context.read<CategoryBloc>().add(FetchCategoryByIdContentEvent(
                   state.categoryByIdContent.data!.descendant));
               print('checking descendant' + descendant);

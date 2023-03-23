@@ -43,8 +43,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    // final userState = context.watch<AuthenticationBloc>().state;
-    // print(userState.userModel.isLogin);
     super.initState();
   }
 

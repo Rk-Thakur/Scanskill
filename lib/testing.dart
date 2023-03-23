@@ -198,46 +198,100 @@
 //     );
 //   }
 // }
+import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:online_learning_app/features/homepage/models/category_id_model.dart';
 
-class Testing extends StatefulWidget {
-  const Testing({Key? key}) : super(key: key);
-
+class PaginationDemo extends StatefulWidget {
   @override
-  State<Testing> createState() => _TestingState();
+  _PaginationDemoState createState() => _PaginationDemoState();
 }
 
-class _TestingState extends State<Testing> {
-  List<ButtonType> button = [
-    ButtonType(icon: FontAwesomeIcons.aws, name: 'Aws'),
-    ButtonType(icon: FontAwesomeIcons.aws, name: 'Aws'),
-    ButtonType(icon: FontAwesomeIcons.aws, name: 'Aws'),
-    ButtonType(icon: FontAwesomeIcons.aws, name: 'Aws'),
-  ];
+class _PaginationDemoState extends State<PaginationDemo> {
+  final scrollController = ScrollController();
+  int _currentPage = 1;
+  bool _isLoading = false;
+  final Dio _dio = Dio();
+  List post = [];
+  List<dynamic> contest = [];
+
+  @override
+  void initState() {
+    super.initState();
+    scrollController.addListener(_scrollListener);
+    _fetchPosts();
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchPosts() async {
+    try {
+      final response = await _dio.get(
+          // 'https://jsonplaceholder.typicode.com/posts?_page=$_currentPage&_limit=10');
+          // 'https://jsonplaceholder.typicode.com/posts?_page=$_currentPage&_limit=3');
+          'http://app.scanskill.com/public/api/content?limit=8&page=$_currentPage');
+      print(response.data['data']['contents']);
+      print(response.data['data']['pagination']['hasNext']);
+      setState(() {
+        contest = contest + response.data['data']['contents'];
+      });
+    } catch (e) {
+      print(e);
+      throw 'failure';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          ListView.builder(
-              itemCount: button.length,
-              itemBuilder: (context, index) {
-                return IconButton(
-                    onPressed: () {}, icon: Icon(button[index].icon));
-              })
-        ],
-      ),
-    );
+        appBar: AppBar(
+          title: Text('Pagination Demo'),
+        ),
+        body: ListView.builder(
+            controller: scrollController,
+            itemCount: _isLoading ? contest.length + 1 : contest.length,
+            itemBuilder: (context, index) {
+              if (index < contest.length) {
+                final posts = contest[index];
+                // final title = posts.title;
+                return Container(
+                  height: 300,
+                  color: index % 2 == 0 ? Colors.red : Colors.teal,
+                  child: ListTile(
+                    title: Text(index.toString()),
+                    subtitle: Text(index.toString()),
+                  ),
+                );
+              } else {
+                return Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.red,
+                  ),
+                );
+              }
+            }));
   }
-}
 
-class ButtonType {
-  IconData icon;
-  String name;
-  ButtonType({
-    required this.icon,
-    required this.name,
-  });
+  Future<void> _scrollListener() async {
+    if (scrollController.position.pixels ==
+        scrollController.position.maxScrollExtent) {
+      setState(() {
+        _isLoading = true;
+      });
+      _currentPage = _currentPage + 1;
+      print('call');
+      await _fetchPosts();
+      setState(() {
+        _isLoading = false;
+      });
+    } else {
+      print("not call");
+    }
+  }
 }

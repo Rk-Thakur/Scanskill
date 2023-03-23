@@ -11,6 +11,7 @@ import 'package:online_learning_app/core/services/token_services.dart';
 import 'package:online_learning_app/features/authentication/bloc/authentication_bloc.dart';
 
 import 'package:online_learning_app/features/utils/router.dart';
+import 'package:online_learning_app/testing.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'core/model/network_connection.dart';
@@ -57,6 +58,7 @@ class MyApp extends StatelessWidget {
             // initialRoute: '/home',
             // home: StoryPage(storymodel: firststories),
             debugShowCheckedModeBanner: false,
+            // home: PaginationDemo(),
             onGenerateRoute: appRouter.onGeneratorRoute,
           ),
         );
