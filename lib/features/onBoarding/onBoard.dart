@@ -5,6 +5,7 @@ import 'package:online_learning_app/core/services/token_services.dart';
 import 'package:online_learning_app/core/ui/textStyle.dart';
 import 'package:online_learning_app/features/authentication/view/loginPage.dart';
 import 'package:online_learning_app/features/homepage/view/homePage.dart';
+import 'package:online_learning_app/features/utils/route.dart';
 import 'package:page_transition/page_transition.dart';
 
 class OnBoardingPage extends StatefulWidget {
@@ -103,11 +104,8 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                                         duration:
                                             const Duration(microseconds: 300),
                                         curve: Curves.bounceInOut)
-                                    : Navigator.of(context).push(
-                                        PageTransition(
-                                            type: PageTransitionType.fade,
-                                            child: LoginPage()),
-                                      );
+                                    : Navigator.of(context)
+                                        .pushNamed(loginScreen);
                               },
                         child: Icon(
                           Icons.arrow_back,
@@ -175,7 +173,7 @@ class dotIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedContainer(
       curve: Curves.easeIn,
-      duration: const Duration(microseconds: 300),
+      duration: const Duration(milliseconds: 300),
       height: 11,
       width: isActive ? 20 : 11,
       decoration: BoxDecoration(

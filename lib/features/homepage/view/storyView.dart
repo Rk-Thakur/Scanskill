@@ -6,6 +6,7 @@ import 'package:online_learning_app/core/constants/color.dart';
 import 'package:online_learning_app/features/homepage/bloc/catergory_bloc.dart';
 import 'package:online_learning_app/features/homepage/models/category_by_id_content.dart';
 import 'package:online_learning_app/features/homepage/view/homePage.dart';
+import 'package:online_learning_app/features/homepage/widgets/animationWidget.dart';
 
 import 'package:online_learning_app/features/mediaType/htmlType.dart';
 import 'package:online_learning_app/features/utils/route.dart';
@@ -25,12 +26,13 @@ class _StoryViewPageState extends State<StoryViewPage>
   late VideoPlayerController _videoPlayerController;
   int currentIndex = 0;
   bool isLoaded = true;
+  bool isBuffering = false;
   var network = '';
   List<TypeDescription> content = [];
+  String? descendant;
 
   @override
   void didChangeDependencies() {
-    print('calling');
     final state = context.watch<CategoryBloc>().state;
     if (state.categoryByIdContentStatus == CategoryByIdContentStatus.success) {
       print("success");
@@ -43,6 +45,13 @@ class _StoryViewPageState extends State<StoryViewPage>
             }));
       _videoPlayerController.play();
       content.clear();
+      // _videoPlayerController.addListener(() {
+      //   if (animationController!.value !=
+      //       _videoPlayerController.value.position.inSeconds) {
+      //     animationController!.value =
+      //         _videoPlayerController.value.position.inSeconds.toDouble();
+      //   }
+      // });
 
       if (mounted) {
         setState(() {
@@ -72,7 +81,23 @@ class _StoryViewPageState extends State<StoryViewPage>
               // _loadStory(
               //     story: state.categoryByIdContent.data!
               //         .typeDescriptions![currentIndex]);
-              Navigator.pop(context);
+              print('object');
+              // Navigator.pop(context);
+              if (descendant != null) {
+                setState(() {
+                  if (_videoPlayerController.value.isPlaying) {
+                    _videoPlayerController.pause();
+                    animationController!.stop();
+                  }
+
+                  context.read<CategoryBloc>().add(
+                      FetchCategoryByIdContentEvent(
+                          state.categoryByIdContent.data!.descendant));
+                  print('checking descendant' + descendant!);
+                });
+              } else {
+                Navigator.of(context).pop();
+              }
             }
           });
         }
@@ -165,6 +190,9 @@ class _StoryViewPageState extends State<StoryViewPage>
                               switch (story.type) {
                                 case 'image':
                                   if (story.imageUrl != null) {
+                                    animationController!.stop();
+
+                                    animationController!.forward();
                                     return CachedNetworkImage(
                                       placeholder: (context, url) {
                                         return Center(
@@ -191,6 +219,12 @@ class _StoryViewPageState extends State<StoryViewPage>
                                       _videoPlayerController
                                           .value.isInitialized) {
                                     return videoWidget();
+                                  } else if (isLoaded) {
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        color: iconColor,
+                                      ),
+                                    );
                                   } else {
                                     return Center(
                                       child: CircularProgressIndicator(
@@ -198,8 +232,10 @@ class _StoryViewPageState extends State<StoryViewPage>
                                       ),
                                     );
                                   }
+
                                 case 'article':
                                   animationController!.stop();
+                                  animationController!.reset();
                                   if (story.article != null) {
                                     return HtmlTypePage(
                                       htmlData: story.article,
@@ -287,6 +323,16 @@ class _StoryViewPageState extends State<StoryViewPage>
             ),
           ),
         ),
+
+        // Align(
+        //   alignment: Alignment.centerRight,
+        //   child: Center(
+        //       child: isBuffering
+        //           ? CircularProgressIndicator(
+        //               color: iconColor,
+        //             )
+        //           : null),
+        // ),
         Padding(
           padding: EdgeInsets.only(
               top: 10.sp, bottom: 20.sp, right: 10.sp, left: 10.sp),
@@ -308,12 +354,18 @@ class _StoryViewPageState extends State<StoryViewPage>
                   borderRadius: BorderRadius.circular(50),
                 ),
                 height: 10,
-                child: VideoProgressIndicator(_videoPlayerController,
-                    colors: VideoProgressColors(
-                        backgroundColor: Colors.grey,
-                        bufferedColor: unselectedColor,
-                        playedColor: iconColor),
-                    allowScrubbing: true),
+                child: isBuffering
+                    ? LinearProgressIndicator(
+                        minHeight: 5,
+                        backgroundColor: unselectedColor,
+                        valueColor: AlwaysStoppedAnimation(iconColor),
+                      )
+                    : VideoProgressIndicator(_videoPlayerController,
+                        colors: VideoProgressColors(
+                            backgroundColor: Colors.grey,
+                            bufferedColor: unselectedColor,
+                            playedColor: iconColor),
+                        allowScrubbing: true),
               )),
 
               // Text(
@@ -380,7 +432,7 @@ class _StoryViewPageState extends State<StoryViewPage>
             }
           }
         } else if (currentIndex + 1 == content.length) {
-          final descendant = state.categoryByIdContent.data!.descendant;
+          descendant = state.categoryByIdContent.data!.descendant;
           if (descendant != null) {
             setState(() {
               if (story.type == 'video') {
@@ -389,24 +441,13 @@ class _StoryViewPageState extends State<StoryViewPage>
                   animationController!.stop();
                 }
               }
+              OverlayAnimation();
+
               context.read<CategoryBloc>().add(FetchCategoryByIdContentEvent(
                   state.categoryByIdContent.data!.descendant));
-              print('checking descendant' + descendant);
+              print('checking descendant' + descendant!);
             });
           } else {
-            // final navigator = Navigator.of(context);
-
-            // if (navigator.canPop()) {
-            //   navigator.pop();
-            // } else {
-            //   Navigator.pushNamed(context, '/home');
-            // }
-            // Navigator.pushReplacementNamed(context, '/home');
-            // final route = PageRouteBuilder(
-            //     pageBuilder: (context, animation, secondaryAnimation) =>
-            //         HomePage(),
-            //     maintainState: true);
-            // Navigator.push(context, route);
             Navigator.of(context).pop();
           }
         }
@@ -439,7 +480,6 @@ class _StoryViewPageState extends State<StoryViewPage>
         animationController!.forward();
         break;
       case 'video':
-        _videoPlayerController == null;
         _videoPlayerController.dispose();
         _videoPlayerController = VideoPlayerController.network(story.videoUrl!)
           ..initialize().then((value) {
@@ -447,14 +487,23 @@ class _StoryViewPageState extends State<StoryViewPage>
             if (_videoPlayerController.value.isInitialized) {
               animationController!.duration =
                   _videoPlayerController.value.duration;
-
               _videoPlayerController.play();
               animationController!.forward();
             }
-            // else {
-            //   _videoPlayerController.pause();
-            //   animationController!.stop();
-            // }
+          })
+          ..addListener(() {
+            animationController!.value =
+                _videoPlayerController.value.position.inMilliseconds /
+                    _videoPlayerController.value.duration.inMilliseconds;
+            if (_videoPlayerController.value.isBuffering) {
+              setState(() {
+                isBuffering = true;
+              });
+            } else {
+              setState(() {
+                isBuffering = false;
+              });
+            }
           });
         break;
       case 'article':

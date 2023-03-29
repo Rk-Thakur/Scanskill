@@ -9,6 +9,8 @@ abstract class AuthenticationEvent extends Equatable {
 
 class AuthenticationGoogleStatusChanged extends AuthenticationEvent {}
 
+class AuthenticationFacebookStatusChanged extends AuthenticationEvent {}
+
 class AuthenticationStatusChanged extends AuthenticationEvent {}
 
 class AuthenticationLogoutRequested extends AuthenticationEvent {}

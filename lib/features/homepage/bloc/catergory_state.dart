@@ -18,7 +18,7 @@ class CategoryState extends Equatable {
   final CategoryModel categoryModel;
   final CategoryModelById categoryModelById;
   final CategoryByIdContent categoryByIdContent;
-  final List<ContentModel> contentModel;
+  final ContentModel contentModel;
 
   CategoryState(
       {this.categoryStatus = CategoryStatus.initial,
@@ -27,7 +27,7 @@ class CategoryState extends Equatable {
       this.categoryByIdContentStatus = CategoryByIdContentStatus.initial,
       this.categoryModel = CategoryModel.empty,
       this.categoryModelById = CategoryModelById.empty,
-      this.contentModel = const [],
+      this.contentModel = ContentModel.empty,
       this.categoryByIdContent = CategoryByIdContent.empty});
 
   CategoryState copyWith(
@@ -37,7 +37,7 @@ class CategoryState extends Equatable {
       CategoryByIdContentStatus? categoryByIdContentStatus,
       CategoryModel? categoryModel,
       CategoryModelById? categoryModelById,
-      List<ContentModel>? contentModel,
+      ContentModel? contentModel,
       CategoryByIdContent? categoryByIdContent}) {
     return CategoryState(
         categoryStatus: categoryStatus ?? this.categoryStatus,

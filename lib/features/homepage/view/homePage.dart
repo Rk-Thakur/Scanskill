@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       endDrawerEnableOpenDragGesture: false,
-      endDrawer: const ProfileDrawer(),
+      endDrawer: ProfileDrawer(),
       backgroundColor: backGroundColor,
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(60),
@@ -197,42 +197,6 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      // bottomNavigationBar: Container(
-      //   height: 56.h,
-      //   // color: Colors.black,
-      //   child: BottomNavigationBar(
-      //     backgroundColor: Colors.transparent,
-      //     elevation: 0,
-      //     items: const <BottomNavigationBarItem>[
-      //       BottomNavigationBarItem(
-      //         icon: Icon(FontAwesomeIcons.houseChimney),
-      //         label: 'Home',
-      //       ),
-      //       BottomNavigationBarItem(
-      //         icon: Icon(
-      //           FontAwesomeIcons.magnifyingGlass,
-      //         ),
-      //         label: 'Search',
-      //       ),
-      //       BottomNavigationBarItem(
-      //         icon: Icon(FontAwesomeIcons.calendar),
-      //         label: 'Calendar',
-      //       ),
-      //       BottomNavigationBarItem(
-      //         icon: Icon(FontAwesomeIcons.user),
-      //         label: 'User',
-      //       ),
-      //     ],
-      //     type: BottomNavigationBarType.fixed,
-      //     currentIndex: _selectedIndex,
-      //     selectedItemColor: navIconColor,
-      //     showSelectedLabels: false,
-      //     showUnselectedLabels: false,
-      //     unselectedItemColor: unselectedColor,
-      //     // iconSize: 20,
-      //     onTap: _onItemTapped,
-      //   ),
-      // ),
     );
   }
 

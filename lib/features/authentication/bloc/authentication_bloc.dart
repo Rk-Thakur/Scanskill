@@ -16,6 +16,7 @@ class AuthenticationBloc
 
   AuthenticationBloc() : super(AuthenticationState()) {
     on<AuthenticationGoogleStatusChanged>(_login);
+    on<AuthenticationFacebookStatusChanged>(_fblogin);
     on<FetchUserProfileEvent>(_fetchUserProfile);
     on<AuthenticationLogoutRequested>(_logout);
     on<CheckLoginEvent>(_checkLogin);
@@ -24,11 +25,25 @@ class AuthenticationBloc
       Emitter<AuthenticationState> emit) async {
     try {
       emit(state.copyWith(authStatus: AuthStatus.logging));
+
       final authResponse = await _authRepository.signInWithGoogle();
-      emit(state.copyWith(
-        authStatus: AuthStatus.loggedIn,
-      ));
+
+      emit(state.copyWith(authStatus: AuthStatus.loggedIn));
     } catch (e) {
+      emit(state.copyWith(authStatus: AuthStatus.failure));
+    }
+  }
+
+  void _fblogin(AuthenticationFacebookStatusChanged event,
+      Emitter<AuthenticationState> emit) async {
+    try {
+      emit(state.copyWith(authStatus: AuthStatus.logging));
+
+      final authResponse = await _authRepository.signInWithFacebook();
+
+      emit(state.copyWith(authStatus: AuthStatus.loggedIn));
+    } catch (e) {
+      print(e);
       emit(state.copyWith(authStatus: AuthStatus.failure));
     }
   }
@@ -37,8 +52,11 @@ class AuthenticationBloc
       Emitter<AuthenticationState> emit) async {
     try {
       emit(state.copyWith(authStatus: AuthStatus.logging));
-      final authResponse = await _authRepository.logOut();
-      emit(state.copyWith(authStatus: AuthStatus.loggedOut));
+      await _authRepository.logOut();
+      emit(state.copyWith(
+          authStatus: AuthStatus.loggedOut,
+          profileStatus: ProfileStatus.initial,
+          userProfileModel: null));
     } catch (e) {
       emit(state.copyWith(authStatus: AuthStatus.failure));
     }
@@ -46,7 +64,7 @@ class AuthenticationBloc
 
   void _checkLogin(CheckLoginEvent event, Emitter<AuthenticationState> emit) {
     try {
-      emit(state.copyWith(authStatus: AuthStatus.logging));
+      // emit(state.copyWith(authStatus: AuthStatus.logging));
       final token = TokenService().getToken();
       if (token != null) {
         emit(state.copyWith(authStatus: AuthStatus.loggedIn));

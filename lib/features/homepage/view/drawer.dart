@@ -17,16 +17,17 @@ class ProfileDrawer extends StatefulWidget {
 class _ProfileDrawerState extends State<ProfileDrawer> {
   @override
   Widget build(BuildContext context) {
-    final token = TokenService().getToken();
+    // final token = TokenService().getToken();
     return Drawer(
       child: BlocListener<AuthenticationBloc, AuthenticationState>(
           listener: (context, state) {
+            print(state.authStatus.toString() + " dscsd");
             if (state.authStatus == AuthStatus.logging) {
               Center(
                 child: CircularProgressIndicator(color: iconColor),
               );
             } else if (state.authStatus == AuthStatus.loggedOut) {
-              print('logged or');
+              // print('logged or');
               Scaffold.of(context).closeEndDrawer();
 
               Navigator.of(context)

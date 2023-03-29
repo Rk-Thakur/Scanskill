@@ -38,19 +38,24 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final state = context.watch<AuthenticationBloc>().state;
+    print(state.toString());
+
     return Scaffold(
         body: Stack(
       children: [
         BlocListener<AuthenticationBloc, AuthenticationState>(
           listener: (context, state) {
+            print(state.authStatus.toString() + 'cheking');
+
             if (state.authStatus == AuthStatus.loggedIn) {
-              // Navigator.pushNamed(
-              //   context,
-              //   '/home',
-              // );
-              // Navigator.pushReplacementNamed(context, '/home');
               Navigator.of(context)
                   .pushNamedAndRemoveUntil('/home', (route) => false);
             }
@@ -169,47 +174,6 @@ class _LoginPageState extends State<LoginPage> {
                       ],
                     ),
                   ),
-                  // ...socialIcon.map((e) => Column(
-                  //       children: [
-                  //         GestureDetector(
-                  //           onTap: () {
-                  //             Navigator.of(context).push(
-                  //               PageTransition(
-                  //                   type: PageTransitionType.fade,
-                  //                   child: CategoryPage()),
-                  //             );
-                  //           },
-                  //           child: Container(
-                  //             width: double.infinity,
-                  //             height: 50.h,
-                  //             decoration: BoxDecoration(
-                  //                 color: selectedColor,
-                  //                 borderRadius: BorderRadius.circular(10)),
-                  //             child: Row(
-                  //               mainAxisAlignment: MainAxisAlignment.center,
-                  //               children: [
-                  //                 e.icon,
-                  //                 SizedBox(
-                  //                   width: 10.w,
-                  //                 ),
-                  //                 Text(
-                  //                   e.name,
-                  //                   style: textStyle(
-                  //                     color: Colors.white,
-                  //                     fontSize: 15.sp,
-                  //                     letterSpacing: 1,
-                  //                     fontWeight: FontWeight.bold,
-                  //                   ),
-                  //                 ),
-                  //               ],
-                  //             ),
-                  //           ),
-                  //         ),
-                  //         SizedBox(
-                  //           height: 15.h,
-                  //         ),
-                  //       ],
-                  //     ))
                   isLoading
                       ? Center(
                           child: CircularProgressIndicator.adaptive(
@@ -262,54 +226,14 @@ class _LoginPageState extends State<LoginPage> {
                   SizedBox(
                     height: 15.h,
                   ),
-                  // GestureDetector(
-                  //   onTap: () {
-                  //     // Navigator.of(context).push(
-                  //     //   PageTransition(
-                  //     //       type: PageTransitionType.fade,
-                  //     //       child: CategoryPage()),
-                  //     // );
-                  //   },
-                  //   child: Container(
-                  //     width: double.infinity,
-                  //     height: 50.h,
-                  //     decoration: BoxDecoration(
-                  //         color: selectedColor,
-                  //         borderRadius: BorderRadius.circular(10)),
-                  //     child: Row(
-                  //       mainAxisAlignment: MainAxisAlignment.center,
-                  //       children: [
-                  //         Icon(
-                  //           FontAwesomeIcons.apple,
-                  //           color: Colors.white,
-                  //           size: 27.sp,
-                  //         ),
-                  //         SizedBox(
-                  //           width: 10.w,
-                  //         ),
-                  //         Text(
-                  //           'Continue with Apple',
-                  //           style: textStyle(
-                  //             color: Colors.white,
-                  //             fontSize: 15.sp,
-                  //             letterSpacing: 1,
-                  //             fontWeight: FontWeight.bold,
-                  //           ),
-                  //         ),
-                  //       ],
-                  //     ),
-                  //   ),
-                  // ),
                   SizedBox(
                     height: 15.h,
                   ),
                   GestureDetector(
                     onTap: () {
-                      // Navigator.of(context).push(
-                      //   PageTransition(
-                      //       type: PageTransitionType.fade,
-                      //       child: CategoryPage()),
-                      // );
+                      context
+                          .read<AuthenticationBloc>()
+                          .add(AuthenticationFacebookStatusChanged());
                     },
                     child: Container(
                       width: double.infinity,
@@ -321,7 +245,7 @@ class _LoginPageState extends State<LoginPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            FontAwesomeIcons.github,
+                            FontAwesomeIcons.facebook,
                             color: Colors.white,
                             size: 25.sp,
                           ),
@@ -329,7 +253,7 @@ class _LoginPageState extends State<LoginPage> {
                             width: 10.w,
                           ),
                           Text(
-                            'Continue with Github',
+                            'Continue with FaceBook',
                             style: textStyle(
                               color: Colors.white,
                               fontSize: 15.sp,

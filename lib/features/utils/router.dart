@@ -4,7 +4,6 @@ import 'package:online_learning_app/features/authentication/auth_repository/auth
 import 'package:online_learning_app/features/authentication/bloc/authentication_bloc.dart';
 import 'package:online_learning_app/features/authentication/view/loginPage.dart';
 import 'package:online_learning_app/features/homepage/bloc/catergory_bloc.dart';
-import 'package:online_learning_app/features/homepage/models/category_by_id_content.dart';
 import 'package:online_learning_app/features/homepage/view/homePage.dart';
 import 'package:online_learning_app/features/homepage/view/storyView.dart';
 import 'package:online_learning_app/features/onBoarding/onBoard.dart';
@@ -13,8 +12,8 @@ import 'package:online_learning_app/features/utils/route.dart';
 
 class AppRouter {
   final CategoryBloc categoryBloc = CategoryBloc();
-  final AuthenticationBloc authenticationBloc = AuthenticationBloc();
-  AppRouter();
+  final AuthenticationBloc authenticationBloc;
+  AppRouter({required this.authenticationBloc});
   final AuthRepository authRepository = AuthRepository();
   Route<dynamic> onGeneratorRoute(RouteSettings routeSettings) {
     switch (routeSettings.name) {
@@ -64,15 +63,8 @@ class AppRouter {
         });
       case loginScreen:
         return MaterialPageRoute(builder: (_) {
-          return MultiBlocProvider(
-              providers: [
-                BlocProvider<AuthenticationBloc>(
-                    create: (context) => AuthenticationBloc()),
-                BlocProvider.value(value: authenticationBloc)
-              ],
-              child: Builder(builder: (context) {
-                return LoginPage();
-              }));
+          return BlocProvider.value(
+              value: authenticationBloc, child: LoginPage());
         });
 
       default:

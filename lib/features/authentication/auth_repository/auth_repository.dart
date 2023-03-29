@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fbAuth;
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:online_learning_app/core/services/dio_service.dart';
@@ -17,6 +18,7 @@ final GoogleSignIn googleSignIn = GoogleSignIn(
 class AuthRepository {
   final dio = Dio();
   final fbAuth.FirebaseAuth _auth = fbAuth.FirebaseAuth.instance;
+  FacebookAuth auth = FacebookAuth.instance;
 
   Future<void> signInWithGoogle() async {
     try {
@@ -32,28 +34,36 @@ class AuthRepository {
       String firebaseIdToken = await _auth.currentUser!.getIdToken();
       final data = {'id_token': firebaseIdToken};
 
-      print('token ' + firebaseIdToken);
-
       final response = await DioService()
           .client
           .post(APIConstants.socialLogin, data: {'data': data});
 
-      // print(response.data);
-
-      // final newUser = UserModel(
-      //   id: _auth.currentUser!.uid,
-      //   email: _auth.currentUser!.email,
-      //   token: response.data['data']['token'],
-      // );
-
-      // print(newUser);
-
       await TokenService().saveToken(response.data!['data']['token'], true);
-      print('saved token' + '${response.data!['data']['token']}');
-      // // print(newUser);
-      // return newUser;
     } on DioError catch (e) {
-      print(e.message);
+      throw e.message;
+    }
+  }
+
+  Future<void> signInWithFacebook() async {
+    try {
+      final LoginResult loginResult =
+          await auth.login(permissions: ['email', 'public_profile']);
+      final fbAuth.OAuthCredential facebookAuthCredential =
+          fbAuth.FacebookAuthProvider.credential(
+              loginResult.accessToken!.token);
+
+      final fbAuth.UserCredential authResult = await fbAuth
+          .FirebaseAuth.instance
+          .signInWithCredential(facebookAuthCredential);
+      String firebaseIdToken = await _auth.currentUser!.getIdToken();
+
+      final data = {'id_token': firebaseIdToken};
+
+      final response = await DioService()
+          .client
+          .post(APIConstants.socialLogin, data: {'data': data});
+      await TokenService().saveToken(response.data!['data']['token'], true);
+    } on DioError catch (e) {
       throw e.message;
     }
   }

@@ -9,6 +9,7 @@ import 'package:online_learning_app/core/constants/color.dart';
 import 'package:online_learning_app/core/services/dio_service.dart';
 import 'package:online_learning_app/core/services/token_services.dart';
 import 'package:online_learning_app/features/authentication/bloc/authentication_bloc.dart';
+import 'package:online_learning_app/features/onBoarding/onBoard.dart';
 
 import 'package:online_learning_app/features/utils/router.dart';
 import 'package:online_learning_app/testing.dart';
@@ -40,27 +41,26 @@ Future<void> main() async {
 
 class MyApp extends StatelessWidget {
   MyApp({Key? key}) : super(key: key);
+  final AuthenticationBloc authenticationBloc = AuthenticationBloc();
   @override
   Widget build(BuildContext context) {
-    final AppRouter appRouter = AppRouter();
+    final AppRouter appRouter =
+        AppRouter(authenticationBloc: authenticationBloc);
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     return ScreenUtilInit(
       designSize: const Size(390, 720),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return BlocProvider(
-          create: (context) => AuthenticationBloc(),
-          child: MaterialApp(
-            theme: ThemeData(
-              primaryColor: primaryColor,
-            ),
-            // initialRoute: '/home',
-            // home: StoryPage(storymodel: firststories),
-            debugShowCheckedModeBanner: false,
-            // home: PaginationDemo(),
-            onGenerateRoute: appRouter.onGeneratorRoute,
+        return MaterialApp(
+          theme: ThemeData(
+            primaryColor: primaryColor,
           ),
+          // initialRoute: '/home',
+          // home: StoryPage(storymodel: firststories),
+          debugShowCheckedModeBanner: false,
+          // home: VideoPlayerScreen(),
+          onGenerateRoute: appRouter.onGeneratorRoute,
         );
       },
     );

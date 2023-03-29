@@ -42,6 +42,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       emit(state.copyWith(categoryByIdStatus: CategoryByIdStatus.loading));
       final categoryByIdResponse =
           await categoryRepository.fetchCategoryById(event.category_id);
+      print(categoryByIdResponse);
       emit(state.copyWith(
           categoryModelById: categoryByIdResponse,
           categoryByIdStatus: CategoryByIdStatus.success));

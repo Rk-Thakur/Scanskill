@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+<!-- <string name="facebook_app_id">1244414846102317</string>
+<string name="fb_login_protocol_scheme">fb1244414846102317</string>
+<string name="facebook_client_token">56789</string> -->
+<string name='app_name'>ScanSkill</string>
+<string name='facebook_app_id'>6002570709796244</string>
+<string name='fb_login_protocol_scheme'>fb6002570709796244</string>
+<string name="facebook_client_token">3812671b33b3303dd2e3a9b618b1c48d</string>
+
+
+
+</resources>
