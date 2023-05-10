@@ -1,5 +1,4 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,6 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:online_learning_app/core/constants/color.dart';
 import 'package:online_learning_app/features/authentication/bloc/authentication_bloc.dart';
+import 'package:online_learning_app/features/homepage/bloc/catergory_bloc.dart';
 import 'package:online_learning_app/features/profile/category/category.dart';
 
 import 'package:online_learning_app/core/ui/textStyle.dart';
@@ -46,18 +46,18 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<AuthenticationBloc>().state;
-    print(state.toString());
+    final page = context.watch<CategoryBloc>().state;
 
     return Scaffold(
         body: Stack(
       children: [
         BlocListener<AuthenticationBloc, AuthenticationState>(
           listener: (context, state) {
-            print(state.authStatus.toString() + 'cheking');
-
             if (state.authStatus == AuthStatus.loggedIn) {
               Navigator.of(context)
                   .pushNamedAndRemoveUntil('/home', (route) => false);
+            } else if (state.authStatus == AuthStatus.failure) {
+              snackMessage(context);
             }
           },
           child: bodyWidget(context),
@@ -70,6 +70,33 @@ class _LoginPageState extends State<LoginPage> {
               )
             : Container()
       ],
+    ));
+  }
+
+  void snackMessage(BuildContext context) {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      margin: EdgeInsets.all(5),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      backgroundColor: selectedColor,
+      elevation: 0,
+      content: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            "Error",
+            style: TextStyle(
+                fontWeight: FontWeight.w500,
+                height: 1.4,
+                // color: Colors.black,
+                fontSize: 14.sp),
+          ),
+          Text('Something Went Wrong!!!'),
+        ],
+      ),
+      behavior: SnackBarBehavior.floating,
+      duration: Duration(seconds: 2),
     ));
   }
 
@@ -189,6 +216,8 @@ class _LoginPageState extends State<LoginPage> {
                                 .read<AuthenticationBloc>()
                                 .add(AuthenticationGoogleStatusChanged());
 
+                            context.read<CategoryBloc>().page = 1;
+
                             setState(() {
                               isLoading = false;
                             });
@@ -234,6 +263,7 @@ class _LoginPageState extends State<LoginPage> {
                       context
                           .read<AuthenticationBloc>()
                           .add(AuthenticationFacebookStatusChanged());
+                      context.read<CategoryBloc>().page = 1;
                     },
                     child: Container(
                       width: double.infinity,

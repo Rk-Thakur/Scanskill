@@ -51,7 +51,6 @@ class AuthRepository {
       final fbAuth.OAuthCredential facebookAuthCredential =
           fbAuth.FacebookAuthProvider.credential(
               loginResult.accessToken!.token);
-
       final fbAuth.UserCredential authResult = await fbAuth
           .FirebaseAuth.instance
           .signInWithCredential(facebookAuthCredential);
@@ -71,7 +70,6 @@ class AuthRepository {
   Future<UserProfileModel> fetchUserProfile() async {
     try {
       final response = await DioService().client.get(APIConstants.userProfile);
-      print(response.data);
       return UserProfileModel.fromJson(response.data);
     } on DioError catch (e) {
       throw e.message;
@@ -83,8 +81,17 @@ class AuthRepository {
       await DioService().client.post(APIConstants.logout);
       TokenService().removeToken();
     } on DioError catch (e) {
-      print(e.response);
       throw e.message;
+    }
+  }
+
+  Future<bool> checkifEmailInUse(fbAuth.AuthCredential credential) async {
+    try {
+      final list = await fbAuth.FirebaseAuth.instance.currentUser!
+          .linkWithCredential(credential);
+      return true;
+    } on fbAuth.FirebaseAuthException catch (e) {
+      return false;
     }
   }
 }

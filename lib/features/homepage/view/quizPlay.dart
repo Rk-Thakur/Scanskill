@@ -124,7 +124,6 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
                             onTap: () {
                               setState(() {
                                 isConfirmed = !isConfirmed;
-                                print(isConfirmed);
                               });
                             },
                             child: Container(

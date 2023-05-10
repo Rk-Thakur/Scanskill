@@ -3,7 +3,7 @@ part of 'catergory_bloc.dart';
 
 enum CategoryStatus { initial, loading, success, failure }
 
-enum ContentStatus { initial, loading, success, failure }
+enum ContentStatus { initial, loading, fetchingMore, success, failure }
 
 enum CategoryByIdContentStatus { initial, loading, success, failure }
 
@@ -18,6 +18,9 @@ class CategoryState extends Equatable {
   final CategoryModel categoryModel;
   final CategoryModelById categoryModelById;
   final CategoryByIdContent categoryByIdContent;
+  final List<Content> content;
+  List<CategoryContent>? category;
+
   final ContentModel contentModel;
 
   CategoryState(
@@ -27,6 +30,8 @@ class CategoryState extends Equatable {
       this.categoryByIdContentStatus = CategoryByIdContentStatus.initial,
       this.categoryModel = CategoryModel.empty,
       this.categoryModelById = CategoryModelById.empty,
+      this.content = const [],
+      this.category = const [],
       this.contentModel = ContentModel.empty,
       this.categoryByIdContent = CategoryByIdContent.empty});
 
@@ -37,6 +42,8 @@ class CategoryState extends Equatable {
       CategoryByIdContentStatus? categoryByIdContentStatus,
       CategoryModel? categoryModel,
       CategoryModelById? categoryModelById,
+      List<CategoryContent>? category,
+      List<Content>? content,
       ContentModel? contentModel,
       CategoryByIdContent? categoryByIdContent}) {
     return CategoryState(
@@ -47,6 +54,8 @@ class CategoryState extends Equatable {
             categoryByIdContentStatus ?? this.categoryByIdContentStatus,
         categoryModel: categoryModel ?? this.categoryModel,
         categoryModelById: categoryModelById ?? this.categoryModelById,
+        category: category ?? this.category,
+        content: content ?? this.content,
         contentModel: contentModel ?? this.contentModel,
         categoryByIdContent: categoryByIdContent ?? this.categoryByIdContent);
   }
@@ -61,6 +70,7 @@ class CategoryState extends Equatable {
         categoryStatus,
         categoryModelById,
         contentModel,
-        categoryByIdContent
+        categoryByIdContent,
+        content
       ];
 }

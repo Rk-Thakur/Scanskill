@@ -12,9 +12,18 @@ class FetchAllCategoryEvent extends CategoryEvent {}
 
 class FetchAllContentEvent extends CategoryEvent {}
 
+class FetchMoreContentEvent extends CategoryEvent {}
+
 class FetchCataegoryEventById extends CategoryEvent {
   final String category_id;
   FetchCataegoryEventById(
+    this.category_id,
+  );
+}
+
+class FetchMoreCataegoryEventById extends CategoryEvent {
+  final String category_id;
+  FetchMoreCataegoryEventById(
     this.category_id,
   );
 }

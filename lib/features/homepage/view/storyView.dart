@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,11 +7,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:online_learning_app/core/constants/color.dart';
 import 'package:online_learning_app/features/homepage/bloc/catergory_bloc.dart';
 import 'package:online_learning_app/features/homepage/models/category_by_id_content.dart';
-import 'package:online_learning_app/features/homepage/view/homePage.dart';
-import 'package:online_learning_app/features/homepage/widgets/animationWidget.dart';
 
 import 'package:online_learning_app/features/mediaType/htmlType.dart';
-import 'package:online_learning_app/features/utils/route.dart';
 
 import 'package:video_player/video_player.dart';
 
@@ -35,7 +34,6 @@ class _StoryViewPageState extends State<StoryViewPage>
   void didChangeDependencies() {
     final state = context.watch<CategoryBloc>().state;
     if (state.categoryByIdContentStatus == CategoryByIdContentStatus.success) {
-      print("success");
       pageController = PageController();
       animationController = AnimationController(vsync: this);
 
@@ -45,13 +43,6 @@ class _StoryViewPageState extends State<StoryViewPage>
             }));
       _videoPlayerController.play();
       content.clear();
-      // _videoPlayerController.addListener(() {
-      //   if (animationController!.value !=
-      //       _videoPlayerController.value.position.inSeconds) {
-      //     animationController!.value =
-      //         _videoPlayerController.value.position.inSeconds.toDouble();
-      //   }
-      // });
 
       if (mounted) {
         setState(() {
@@ -77,27 +68,22 @@ class _StoryViewPageState extends State<StoryViewPage>
                   story: state.categoryByIdContent.data!
                       .typeDescriptions![currentIndex]);
             } else {
-              // currentIndex = 0;
-              // _loadStory(
-              //     story: state.categoryByIdContent.data!
-              //         .typeDescriptions![currentIndex]);
-              print('object');
-              // Navigator.pop(context);
-              if (descendant != null) {
-                setState(() {
-                  if (_videoPlayerController.value.isPlaying) {
-                    _videoPlayerController.pause();
-                    animationController!.stop();
-                  }
+              Navigator.pop(context);
 
-                  context.read<CategoryBloc>().add(
-                      FetchCategoryByIdContentEvent(
-                          state.categoryByIdContent.data!.descendant));
-                  print('checking descendant' + descendant!);
-                });
-              } else {
-                Navigator.of(context).pop();
-              }
+              // if (descendant != null) {
+              //   setState(() {
+              //     if (_videoPlayerController.value.isPlaying) {
+              //       _videoPlayerController.pause();
+              //       animationController!.stop();
+              //     }
+              //     context.read<CategoryBloc>().add(
+              //         FetchCategoryByIdContentEvent(
+              //             state.categoryByIdContent.data!.descendant));
+              //     print('checking descendant' + descendant!);
+              //   });
+              // } else {
+              //   Navigator.of(context).pop();
+              // }
             }
           });
         }
@@ -110,8 +96,10 @@ class _StoryViewPageState extends State<StoryViewPage>
   @override
   void dispose() {
     pageController!.dispose();
-    animationController!.dispose();
     _videoPlayerController.dispose();
+    animationController!.dispose();
+    // _timer!.cancel();
+
     super.dispose();
   }
 
@@ -147,7 +135,6 @@ class _StoryViewPageState extends State<StoryViewPage>
         child: Scaffold(
           backgroundColor: const Color(0xffF8F7F3),
           body: Builder(builder: (context) {
-            print(content);
             if (content == null || content.isEmpty) {
               return Center(
                 child: CircularProgressIndicator(
@@ -159,14 +146,14 @@ class _StoryViewPageState extends State<StoryViewPage>
             final stateCategory = context.watch<CategoryBloc>().state;
 
             return GestureDetector(
-              onLongPress: () {
-                animationController!.stop();
-              },
-              onLongPressCancel: () {
-                setState(() {
-                  animationController!.forward();
-                });
-              },
+              // onLongPress: () {
+              //   animationController!.stop();
+              // },
+              // onLongPressCancel: () {
+              //   setState(() {
+              //     animationController!.forward();
+              //   });
+              // },
               onTapDown: (details) => _onTapDown(details, story, stateCategory),
               child: Stack(
                 children: [
@@ -275,6 +262,7 @@ class _StoryViewPageState extends State<StoryViewPage>
                       child: Column(
                         children: [
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: content
                                 .asMap()
                                 .map((i, e) {
@@ -309,77 +297,86 @@ class _StoryViewPageState extends State<StoryViewPage>
   }
 
   videoWidget() {
-    return Column(
+    return Stack(
       children: [
-        Expanded(
-          child: FittedBox(
-            fit: BoxFit.fitWidth,
-            child: SizedBox(
-              width: _videoPlayerController.value.size.width,
-              height: _videoPlayerController.value.size.height,
-              child: VideoPlayer(
-                _videoPlayerController,
+        Column(
+          children: [
+            Expanded(
+              child: FittedBox(
+                fit: BoxFit.fitWidth,
+                child: SizedBox(
+                  width: _videoPlayerController.value.size.width,
+                  height: _videoPlayerController.value.size.height,
+                  child: VideoPlayer(
+                    _videoPlayerController,
+                  ),
+                ),
               ),
             ),
-          ),
+            Padding(
+              padding: EdgeInsets.only(
+                  top: 10.sp, bottom: 20.sp, right: 10.sp, left: 10.sp),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // ValueListenableBuilder(
+                  //     valueListenable: _videoPlayerController,
+                  //     builder: (context, VideoPlayerValue value, child) {
+                  //       return Text(
+                  //         _videoDuration(value.position),
+                  //         style: TextStyle(color: textColor, fontSize: 15),
+                  //       );
+                  //     }),
+                  Expanded(
+                      child: Container(
+                    decoration: BoxDecoration(
+                      // color: Colors.grey,
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                    height: 10,
+                    child:
+                        // isBuffering
+                        //     ? LinearProgressIndicator(
+                        //         minHeight: 5,
+                        //         backgroundColor: unselectedColor,
+                        //         valueColor: AlwaysStoppedAnimation(iconColor),
+                        //       )
+                        //     :
+                        VideoProgressIndicator(_videoPlayerController,
+                            colors: VideoProgressColors(
+                                backgroundColor: Colors.grey,
+                                bufferedColor: unselectedColor,
+                                playedColor: iconColor),
+                            allowScrubbing: true),
+                  )),
+
+                  // Text(
+                  //   _videoDuration(_videoPlayerController.value.duration),
+                  //   style: TextStyle(color: textColor, fontSize: 15),
+                  // )
+                  // IconButton(
+                  //     onPressed: () {
+                  //       SystemChrome.setPreferredOrientations(
+                  //           [DeviceOrientation.landscapeLeft]);
+                  //     },
+                  //     icon: Icon(Icons.fullscreen))
+                ],
+              ),
+            ),
+          ],
         ),
-
-        // Align(
-        //   alignment: Alignment.centerRight,
-        //   child: Center(
-        //       child: isBuffering
-        //           ? CircularProgressIndicator(
-        //               color: iconColor,
-        //             )
-        //           : null),
-        // ),
-        Padding(
-          padding: EdgeInsets.only(
-              top: 10.sp, bottom: 20.sp, right: 10.sp, left: 10.sp),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // ValueListenableBuilder(
-              //     valueListenable: _videoPlayerController,
-              //     builder: (context, VideoPlayerValue value, child) {
-              //       return Text(
-              //         _videoDuration(value.position),
-              //         style: TextStyle(color: textColor, fontSize: 15),
-              //       );
-              //     }),
-              Expanded(
-                  child: Container(
-                decoration: BoxDecoration(
-                  // color: Colors.grey,
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                height: 10,
-                child: isBuffering
-                    ? LinearProgressIndicator(
-                        minHeight: 5,
-                        backgroundColor: unselectedColor,
-                        valueColor: AlwaysStoppedAnimation(iconColor),
-                      )
-                    : VideoProgressIndicator(_videoPlayerController,
-                        colors: VideoProgressColors(
-                            backgroundColor: Colors.grey,
-                            bufferedColor: unselectedColor,
-                            playedColor: iconColor),
-                        allowScrubbing: true),
-              )),
-
-              // Text(
-              //   _videoDuration(_videoPlayerController.value.duration),
-              //   style: TextStyle(color: textColor, fontSize: 15),
-              // )
-              // IconButton(
-              //     onPressed: () {
-              //       SystemChrome.setPreferredOrientations(
-              //           [DeviceOrientation.landscapeLeft]);
-              //     },
-              //     icon: Icon(Icons.fullscreen))
-            ],
-          ),
+        Positioned(
+          top: 0,
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: isBuffering
+              ? Center(
+                  child: CircularProgressIndicator(
+                    color: iconColor,
+                  ),
+                )
+              : Container(),
         ),
       ],
     );
@@ -411,10 +408,9 @@ class _StoryViewPageState extends State<StoryViewPage>
                   animationController!.stop();
                 }
               }
-              // Navigator.pushNamed(context, storyScreen);
+
               context.read<CategoryBloc>().add(FetchCategoryByIdContentEvent(
                   state.categoryByIdContent.data!.ancestor));
-              print('checking ancestor' + ancestor);
             });
           } else {
             Navigator.pop(context);
@@ -441,11 +437,11 @@ class _StoryViewPageState extends State<StoryViewPage>
                   animationController!.stop();
                 }
               }
-              OverlayAnimation();
-
+              // _timer = Timer(Duration(milliseconds: 200), () {
+              //   animationController!.reset();
+              // });
               context.read<CategoryBloc>().add(FetchCategoryByIdContentEvent(
                   state.categoryByIdContent.data!.descendant));
-              print('checking descendant' + descendant!);
             });
           } else {
             Navigator.of(context).pop();

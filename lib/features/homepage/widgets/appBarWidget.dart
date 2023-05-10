@@ -56,7 +56,6 @@ class appBarWidget extends StatelessWidget {
                   radius: 50,
                 ),
                 onPressed: () {
-                  print("profile drawer open");
                   context
                       .read<AuthenticationBloc>()
                       .add(FetchUserProfileEvent());

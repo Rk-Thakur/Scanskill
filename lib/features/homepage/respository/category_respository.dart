@@ -11,7 +11,6 @@ class CategoryRepository {
     try {
       final response =
           await DioService().client.get(APIConstants.getAllCategories);
-      print(response.data);
 
       return CategoryModel.fromJson(response.data);
     } on DioError catch (e) {
@@ -24,11 +23,10 @@ class CategoryRepository {
     try {
       final response = await DioService().client.get(
         APIConstants.getAllCategories + "/" + category_id,
-        queryParameters: {"limit": 7, "page": page},
+        queryParameters: {"limit": 10, "page": page},
       );
       print(
           'http://app.scanskill.com/public/api/category/$category_id?limit=7&page=$page');
-      print(response.data);
 
       return CategoryModelById.fromJson(response.data);
     } on DioError catch (e) {
@@ -43,7 +41,6 @@ class CategoryRepository {
             APIConstants.getContent + "/" + content_id,
           );
 
-      print(response.data);
       return CategoryByIdContent.fromJson(response.data);
     } on DioError catch (e) {
       throw e.message;
@@ -54,8 +51,6 @@ class CategoryRepository {
     try {
       final response = await DioService().client.get(APIConstants.getContent,
           queryParameters: {"limit": 7, "page": page});
-      print('http://app.scanskill.com/public/api/content?limit=7&page=$page');
-      print(response.data);
       return ContentModel.fromJson(response.data);
     } on DioError catch (e) {
       throw e.message;

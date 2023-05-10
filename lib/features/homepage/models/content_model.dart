@@ -147,3 +147,79 @@ class Pagination {
         "hasNext": hasNext,
       };
 }
+
+// import 'dart:convert';
+
+// List<ContentModel> contentModelFromJson(List<dynamic> str) =>
+//     List<ContentModel>.from((str).map((x) => ContentModel.fromJson(x)));
+
+// String contentModelToJson(List<ContentModel> data) =>
+//     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+
+// class ContentModel {
+//   ContentModel({
+//     this.id,
+//     this.title,
+//     this.slug,
+//     this.status,
+//     this.categoryId,
+//     this.topicId,
+//     this.ancestor,
+//     this.descendant,
+//     this.description,
+//     this.excerpt,
+//     this.createdAt,
+//     this.updatedAt,
+//     this.deletedAt,
+//   });
+
+//   final String? id;
+//   final String? title;
+//   final String? slug;
+//   final String? status;
+//   final String? categoryId;
+//   final String? topicId;
+//   final String? ancestor;
+//   final String? descendant;
+//   final String? description;
+//   final String? excerpt;
+//   final DateTime? createdAt;
+//   final DateTime? updatedAt;
+//   final dynamic deletedAt;
+
+//   factory ContentModel.fromJson(Map<String, dynamic> json) => ContentModel(
+//         id: json["id"],
+//         title: json["title"],
+//         slug: json["slug"],
+//         status: json["status"],
+//         categoryId: json["categoryId"],
+//         topicId: json["topicId"],
+//         ancestor: json["ancestor"],
+//         descendant: json["descendant"],
+//         description: json["description"],
+//         excerpt: json["excerpt"],
+//         createdAt: json["createdAt"] == null
+//             ? null
+//             : DateTime.parse(json["createdAt"]),
+//         updatedAt: json["updatedAt"] == null
+//             ? null
+//             : DateTime.parse(json["updatedAt"]),
+//         deletedAt: json["deletedAt"],
+//       );
+
+//   Map<String, dynamic> toJson() => {
+//         "id": id,
+//         "title": title,
+//         "slug": slug,
+//         "status": status,
+//         "categoryId": categoryId,
+//         "topicId": topicId,
+//         "ancestor": ancestor,
+//         "descendant": descendant,
+//         "description": description,
+//         "excerpt": excerpt,
+//         "createdAt": createdAt?.toIso8601String(),
+//         "updatedAt": updatedAt?.toIso8601String(),
+//         "deletedAt": deletedAt,
+//       };
+// }

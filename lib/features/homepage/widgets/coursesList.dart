@@ -10,6 +10,7 @@ import 'package:online_learning_app/features/homepage/models/category_id_model.d
 import 'package:online_learning_app/features/homepage/models/content_model.dart';
 import 'package:online_learning_app/features/homepage/respository/category_respository.dart';
 import 'package:online_learning_app/features/utils/route.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../bloc/catergory_bloc.dart';
 
@@ -25,7 +26,7 @@ class CoursesList extends StatefulWidget {
 class _CoursesListState extends State<CoursesList> {
   final scrollController = ScrollController();
   final categoryidscrollController = ScrollController();
-  ContentModel? contentModel;
+  // ContentModel? contentModel;
   CategoryModelById? categoryModelById;
   List<Content> contest = [];
   List<CategoryContent> category = [];
@@ -38,79 +39,8 @@ class _CoursesListState extends State<CoursesList> {
   @override
   void initState() {
     super.initState();
-    scrollController.addListener(_scrollListener);
-    categoryidscrollController.addListener(_contentscrollListener);
 
-    _fetchPosts(_currentPage);
-    // _fetchPostById(_categoryPage);
     token = TokenService().getToken();
-  }
-
-  Future<void> _scrollListener() async {
-    if (scrollController.position.pixels ==
-        scrollController.position.maxScrollExtent) {
-      setState(() {
-        _isLoading = true;
-      });
-      if (contentModel!.data!.pagination!.hasNext!) {
-        setState(() {
-          _currentPage = _currentPage + 1;
-        });
-
-        await _fetchPosts(_currentPage);
-      }
-
-      setState(() {
-        _isLoading = false;
-      });
-    } else {}
-  }
-
-  Future<void> _contentscrollListener() async {
-    if (categoryidscrollController.position.pixels ==
-        categoryidscrollController.position.maxScrollExtent) {
-      setState(() {
-        _isLoading = true;
-      });
-      if (categoryModelById!.data!.contents!.pagination!.hasNext!) {
-        setState(() {
-          _categoryPage = _categoryPage + 1;
-        });
-        await _fetchPostById(_categoryPage);
-      }
-
-      setState(() {
-        _isLoading = false;
-      });
-    } else {}
-  }
-
-  Future<void> _fetchPosts(int page) async {
-    try {
-      final response = await CategoryRepository().fetchContent(page: page);
-
-      setState(() {
-        contentModel = response;
-        contest = contest + response.data!.contents!;
-      });
-    } catch (e) {
-      print(e);
-      throw 'failure';
-    }
-  }
-
-  Future<void> _fetchPostById(int page) async {
-    try {
-      final response = await CategoryRepository()
-          .fetchCategoryById(widget.categoryId!, page: page);
-      setState(() {
-        categoryModelById = response;
-        category = category + response.data!.contents!.contents!;
-      });
-    } catch (e) {
-      print(e);
-      throw 'failure';
-    }
   }
 
   Future<void> _getCategoryContent() async {
@@ -120,14 +50,13 @@ class _CoursesListState extends State<CoursesList> {
   }
 
   Future<void> _getContent() async {
-    _fetchPosts(1);
-    // context.read<CategoryBloc>().add(FetchAllContentEvent());
+    context.read<CategoryBloc>().page = 1;
+
+    context.read<CategoryBloc>().add(FetchAllContentEvent());
   }
 
   @override
   Widget build(BuildContext context) {
-    // final token = TokenService().getToken();
-
     final state = context.watch<CategoryBloc>().state;
     return SafeArea(
         child: Scaffold(
@@ -342,6 +271,9 @@ class _CoursesListState extends State<CoursesList> {
                                 child: Text("Content Not Available"),
                               )
                             : GridView.builder(
+                                // controller: context
+                                //     .read<CategoryBloc>()
+                                //     .scrollCategoryController,
                                 gridDelegate: SliverQuiltedGridDelegate(
                                     mainAxisSpacing: 6,
                                     crossAxisCount: 4,
@@ -505,144 +437,164 @@ class _CoursesListState extends State<CoursesList> {
                 }
               },
             )
-          : BlocListener<CategoryBloc, CategoryState>(
-              listener: (context, state) {
-                if (state.contentStatus == ContentStatus.success) {
-                  token != null
-                      ? setState(() {
-                          contest = state.contentModel.data!.contents!;
-                        })
-                      : setState(() {
-                          addContent(state);
-                        });
-                  print(contest.length);
-                  print(state);
-                } else if (state.contentStatus == ContentStatus.loading) {
-                  Center(
+          : BlocBuilder<CategoryBloc, CategoryState>(
+              builder: (context, state) {
+                if (state.contentStatus == ContentStatus.loading) {
+                  return Center(
                     child: CircularProgressIndicator(
                       color: iconColor,
                     ),
                   );
+                  // return SimmerLoader();
+
+                }
+                // else if (state.contentStatus == ContentStatus.fetchingMore) {
+                //   return Padding(
+                //     padding: const EdgeInsets.all(8.0),
+                //     child: Center(
+                //       child: Align(
+                //         alignment: Alignment.bottomCenter,
+                //         child: CircularProgressIndicator(),
+                //       ),
+                //     ),
+                //   );
+                // }
+                else if (state.contentStatus == ContentStatus.success) {
+                  addContent(state);
+                  return RefreshIndicator(
+                    displacement: 50,
+                    color: iconColor,
+                    edgeOffset: 0,
+                    backgroundColor: unselectedColor,
+                    strokeWidth: 3,
+                    onRefresh: () async {
+                      await _getContent();
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                          left: 15.sp, right: 15.sp, bottom: 15.sp),
+                      child: GridView.builder(
+                        controller:
+                            context.read<CategoryBloc>().scrollController,
+                        gridDelegate: SliverQuiltedGridDelegate(
+                            mainAxisSpacing: 6,
+                            crossAxisCount: 4,
+                            crossAxisSpacing: 6,
+                            repeatPattern: QuiltedGridRepeatPattern.inverted,
+                            pattern: const [
+                              QuiltedGridTile(2, 2),
+                              QuiltedGridTile(1, 2),
+                              QuiltedGridTile(1, 2),
+                            ]),
+                        itemCount: token != null
+                            ? state.content.length
+                            : contest.length,
+                        itemBuilder: (context, index) {
+                          final content = token != null
+                              ? state.content[index]
+                              : contest[index];
+                          return GestureDetector(
+                            onTap: () {
+                              if (token == null) {
+                                if (index == 1) {
+                                  Navigator.of(context).pushNamed(
+                                    loginScreen,
+                                  );
+                                } else {
+                                  context.read<CategoryBloc>().add(
+                                      FetchCategoryByIdContentEvent(
+                                          content.id!));
+                                  Navigator.pushNamed(context, storyScreen);
+                                }
+                              } else {
+                                context.read<CategoryBloc>().add(
+                                    FetchCategoryByIdContentEvent(content.id!));
+                                Navigator.pushNamed(context, storyScreen);
+                              }
+                            },
+                            child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.circular(10.sp),
+                                      color: token == null
+                                          ? index == 1
+                                              ? unselectedColor
+                                              : containerColor
+                                          : containerColor),
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 15.sp, vertical: 8.sp),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        index == 1
+                                            ? const SizedBox(
+                                                height: 2,
+                                              )
+                                            : SizedBox(
+                                                height: 0.h,
+                                              ),
+                                        Align(
+                                          alignment: Alignment.topLeft,
+                                          child: Text('${content.title} ',
+                                              // : '${state.categoryModelById.data!.name}',
+                                              textAlign: TextAlign.left,
+                                              overflow: TextOverflow.fade,
+                                              style: textStyle(
+                                                  fontSize: 15.sp,
+                                                  letterSpacing: .5,
+                                                  // color: index == 1
+                                                  //     ? white
+                                                  //     : textColor,
+                                                  color: token == null
+                                                      ? index == 1
+                                                          ? white
+                                                          : textColor
+                                                      : textColor,
+                                                  fontWeight: FontWeight.bold)),
+                                        ),
+                                        SizedBox(
+                                          height: 5.sp,
+                                        ),
+                                        Align(
+                                          alignment: Alignment.topLeft,
+                                          child: Text('${content.excerpt}',
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: (index == 0 ||
+                                                      (index % 2 == 0 &&
+                                                              index > 2) &&
+                                                          index != 8)
+                                                  ? 8
+                                                  : 2,
+                                              style: textStyle(
+                                                  fontSize: 11.sp,
+                                                  color: token == null
+                                                      ? index == 1
+                                                          ? white
+                                                          : textColor
+                                                      : textColor,
+                                                  // color: index == 1
+                                                  //     ? white
+                                                  //     : textColor,
+                                                  fontWeight: FontWeight.w600)),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                )),
+                          );
+                        },
+                      ),
+                    ),
+                  );
+                } else {
+                  return Container();
                 }
               },
-              child: Padding(
-                  padding:
-                      EdgeInsets.only(left: 15.sp, right: 15.sp, bottom: 15.sp),
-                  child: GridView.builder(
-                    controller: scrollController,
-                    gridDelegate: SliverQuiltedGridDelegate(
-                        mainAxisSpacing: 6,
-                        crossAxisCount: 4,
-                        crossAxisSpacing: 6,
-                        repeatPattern: QuiltedGridRepeatPattern.inverted,
-                        pattern: const [
-                          QuiltedGridTile(2, 2),
-                          QuiltedGridTile(1, 2),
-                          QuiltedGridTile(1, 2),
-                        ]),
-                    itemCount: token != null
-                        ? state.contentModel.data!.contents!.length
-                        : contest.length,
-                    itemBuilder: (context, index) {
-                      final content = token != null
-                          ? state.contentModel.data!.contents![index]
-                          : contest[index];
-                      return GestureDetector(
-                        onTap: () {
-                          if (token == null) {
-                            if (index == 1) {
-                              Navigator.of(context).pushNamed(
-                                loginScreen,
-                              );
-                            } else {
-                              context.read<CategoryBloc>().add(
-                                  FetchCategoryByIdContentEvent(content.id!));
-                              Navigator.pushNamed(context, storyScreen);
-                            }
-                          } else {
-                            context.read<CategoryBloc>().add(
-                                FetchCategoryByIdContentEvent(content.id!));
-                            Navigator.pushNamed(context, storyScreen);
-                          }
-                        },
-                        child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10.sp),
-                                  color: token == null
-                                      ? index == 1
-                                          ? unselectedColor
-                                          : containerColor
-                                      : containerColor),
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 15.sp, vertical: 8.sp),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    index == 1
-                                        ? const SizedBox(
-                                            height: 2,
-                                          )
-                                        : SizedBox(
-                                            height: 0.h,
-                                          ),
-                                    Align(
-                                      alignment: Alignment.topLeft,
-                                      child: Text(
-                                          // isContent
-                                          //     ?
-
-                                          '${content.title} ',
-                                          // : '${state.categoryModelById.data!.name}',
-                                          textAlign: TextAlign.left,
-                                          overflow: TextOverflow.fade,
-                                          style: textStyle(
-                                              fontSize: 15.sp,
-                                              letterSpacing: .5,
-                                              // color: index == 1
-                                              //     ? white
-                                              //     : textColor,
-                                              color: token == null
-                                                  ? index == 1
-                                                      ? white
-                                                      : textColor
-                                                  : textColor,
-                                              fontWeight: FontWeight.bold)),
-                                    ),
-                                    SizedBox(
-                                      height: 5.sp,
-                                    ),
-                                    Align(
-                                      alignment: Alignment.topLeft,
-                                      child: Text('${content.excerpt}',
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: (index == 0 ||
-                                                  (index % 2 == 0 &&
-                                                          index > 2) &&
-                                                      index != 8)
-                                              ? 8
-                                              : 2,
-                                          style: textStyle(
-                                              fontSize: 11.sp,
-                                              color: token == null
-                                                  ? index == 1
-                                                      ? white
-                                                      : textColor
-                                                  : textColor,
-                                              // color: index == 1
-                                              //     ? white
-                                              //     : textColor,
-                                              fontWeight: FontWeight.w600)),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            )),
-                      );
-                    },
-                  ))),
+            ),
     ));
   }
 
@@ -676,7 +628,7 @@ class _CoursesListState extends State<CoursesList> {
 
   void addContent(CategoryState state) {
     contest.clear();
-    contest.addAll([...state.contentModel.data!.contents!]);
+    contest.addAll([...state.content]);
     if (contest.isEmpty) {
     } else {
       contest.insert(
@@ -715,5 +667,85 @@ class _CoursesListState extends State<CoursesList> {
             updatedAt: null),
       );
     }
+  }
+}
+
+class SimmerLoader extends StatelessWidget {
+  const SimmerLoader({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Shimmer.fromColors(
+        baseColor: Colors.grey,
+        highlightColor: Colors.grey,
+        enabled: true,
+        child: GridView.builder(
+            gridDelegate: SliverQuiltedGridDelegate(
+                mainAxisSpacing: 6,
+                crossAxisCount: 4,
+                crossAxisSpacing: 6,
+                repeatPattern: QuiltedGridRepeatPattern.inverted,
+                pattern: const [
+                  QuiltedGridTile(2, 2),
+                  QuiltedGridTile(1, 2),
+                  QuiltedGridTile(1, 2),
+                ]),
+            itemCount: 10,
+            itemBuilder: (context, index) {
+              return ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.sp),
+                        color: containerColor),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 15.sp, vertical: 8.sp),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const SizedBox(
+                            height: 2,
+                          ),
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(' ',
+                                // : '${state.categoryModelById.data!.name}',
+                                textAlign: TextAlign.left,
+                                overflow: TextOverflow.fade,
+                                style: textStyle(
+                                    fontSize: 15.sp,
+                                    letterSpacing: .5,
+                                    // color: index == 1
+                                    //     ? white
+                                    //     : textColor,
+                                    color: textColor,
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                          SizedBox(
+                            height: 5.sp,
+                          ),
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Text('',
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: (index == 0 ||
+                                        (index % 2 == 0 && index > 2) &&
+                                            index != 8)
+                                    ? 8
+                                    : 2,
+                                style: textStyle(
+                                    fontSize: 11.sp,
+                                    color: textColor,
+                                    fontWeight: FontWeight.w600)),
+                          )
+                        ],
+                      ),
+                    ),
+                  ));
+            }),
+      ),
+    );
   }
 }

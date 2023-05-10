@@ -63,8 +63,12 @@ class AppRouter {
         });
       case loginScreen:
         return MaterialPageRoute(builder: (_) {
-          return BlocProvider.value(
-              value: authenticationBloc, child: LoginPage());
+          return MultiBlocProvider(providers: [
+            BlocProvider.value(value: authenticationBloc),
+            BlocProvider.value(
+              value: categoryBloc,
+            ),
+          ], child: LoginPage());
         });
 
       default:

@@ -16,10 +16,6 @@ class TokenService {
     return true;
   }
 
-  // Future<UserDetail?> getUserDetails(UserDetail user) async {
-  //   return UserDetail(
-  //       id: user.id, email: user.email, firstName: user.firstName);
-  // }
   Future<bool> saveOnboard() async {
     await _onBoardBox.put(CacheManagerKey.onBoard.toString(), true);
     return true;

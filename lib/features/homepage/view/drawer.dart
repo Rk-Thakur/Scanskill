@@ -4,6 +4,7 @@ import 'package:online_learning_app/core/constants/color.dart';
 import 'package:online_learning_app/core/services/token_services.dart';
 import 'package:online_learning_app/core/ui/textStyle.dart';
 import 'package:online_learning_app/features/authentication/bloc/authentication_bloc.dart';
+import 'package:online_learning_app/features/homepage/bloc/catergory_bloc.dart';
 
 class ProfileDrawer extends StatefulWidget {
   const ProfileDrawer({
@@ -21,13 +22,11 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
     return Drawer(
       child: BlocListener<AuthenticationBloc, AuthenticationState>(
           listener: (context, state) {
-            print(state.authStatus.toString() + " dscsd");
             if (state.authStatus == AuthStatus.logging) {
               Center(
                 child: CircularProgressIndicator(color: iconColor),
               );
             } else if (state.authStatus == AuthStatus.loggedOut) {
-              // print('logged or');
               Scaffold.of(context).closeEndDrawer();
 
               Navigator.of(context)
@@ -117,10 +116,10 @@ class _ProfileDrawerState extends State<ProfileDrawer> {
                 leading: const Icon(Icons.logout),
                 title: const Text('LogOut'),
                 onTap: () {
-                  print('logout');
                   setState(() {
                     context.read<AuthenticationBloc>()
                       ..add(AuthenticationLogoutRequested());
+                    context.read<CategoryBloc>().page = 1;
                   });
                 },
               ),
